@@ -64,7 +64,7 @@ export default function Home() {
             lineHeight: 1.2,
             background: 'linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%)',
             WebkitBackgroundClip: 'text',
-            WebkitTextFill-color: 'transparent'
+            WebkitTextFillColor: 'transparent'
           }}>
             Smart Civic Issue Reporting & Real-Time Tracking
           </h1>
