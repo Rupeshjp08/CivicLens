@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
-  AlertCircle, 
   Lightbulb, 
   Trash2, 
   Droplet, 
@@ -10,7 +9,10 @@ import {
   ShieldCheck,
   CheckCircle2,
   Clock,
-  TrendingUp
+  TrendingUp,
+  Zap,
+  Activity,
+  Send
 } from 'lucide-react';
 import { api } from '../services/api';
 
@@ -22,133 +24,148 @@ export default function Home() {
   }, []);
 
   const categories = [
-    { title: 'Potholes', icon: Construction, desc: 'Road damage & hazards', color: '#f97316' },
-    { title: 'Broken Streetlights', icon: Lightbulb, desc: 'Night illumination issues', color: '#facc15' },
-    { title: 'Garbage Accumulation', icon: Trash2, desc: 'Sanitation & overflow', color: '#38bdf8' },
-    { title: 'Water Leakage', icon: Droplet, desc: 'Pipe bursts & wastage', color: '#60a5fa' }
+    { title: 'Potholes & Hazards', categoryVal: 'Pothole', icon: Construction, desc: 'Road damage, asphalt craters & structural hazards', color: '#F97316' },
+    { title: 'Sanitation & Overflow', categoryVal: 'Garbage Accumulation', icon: Trash2, desc: 'Uncollected waste, garbage overflow & bio-hazards', color: '#38BDF8' },
+    { title: 'Water Leakage & Mains', categoryVal: 'Water Leakage', icon: Droplet, desc: 'Pipe bursts, drainage blockages & clean water wastage', color: '#60A5FA' },
+    { title: 'Power Grid & Lighting', categoryVal: 'Broken Streetlight', icon: Zap, desc: 'Broken streetlights, blackouts & electrical hazards', color: '#FACC15' }
   ];
 
   return (
-    <div className="home-page" style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
-      {/* API Connection Indicator */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justify: 'space-between',
-        background: 'rgba(56, 189, 248, 0.08)',
-        border: '1px solid rgba(56, 189, 248, 0.2)',
-        padding: '0.75rem 1.25rem',
-        borderRadius: 'var(--radius-sm)',
-        fontSize: '0.88rem'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <ShieldCheck size={18} color="#38bdf8" />
-          <span><strong>API Status:</strong> {apiHealth ? apiHealth.message : 'Checking connection...'}</span>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+      {/* Mesh System Status Indicator */}
+      <div className="panel" style={{ padding: '0.85rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+          <ShieldCheck size={18} color="#3B82F6" />
+          <span style={{ fontSize: '0.88rem' }}><strong style={{ color: 'var(--text-primary)' }}>Municipal Mesh Health:</strong> {apiHealth ? apiHealth.message : 'Verifying node response...'}</span>
         </div>
-        <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Developer 1: Citizen Portal</span>
+        <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10B981' }} />
+          <span>Real-time Citizen Triage Active</span>
+        </div>
       </div>
 
-      {/* Hero Banner */}
-      <div className="card" style={{ 
-        background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%)',
-        padding: '3.5rem 2rem',
-        textAlign: 'center',
-        position: 'relative',
-        overflow: 'hidden'
-      }}>
-        <div style={{ maxWidth: '750px', margin: '0 auto' }}>
-          <h1 style={{ 
-            fontSize: '2.75rem', 
-            fontWeight: 800, 
-            marginBottom: '1rem',
-            lineHeight: 1.2,
-            background: 'linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent'
+      {/* Hero Operational Banner */}
+      <div className="panel" style={{ padding: '3rem 2.25rem', background: '#111622', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ maxWidth: '820px' }}>
+          <div style={{ 
+            display: 'inline-flex', 
+            alignItems: 'center', 
+            gap: '0.5rem', 
+            background: 'rgba(59, 130, 246, 0.12)', 
+            border: '1px solid rgba(59, 130, 246, 0.3)',
+            borderRadius: '4px',
+            padding: '0.25rem 0.75rem',
+            fontSize: '0.8rem',
+            color: '#60A5FA',
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            letterSpacing: '0.04em',
+            marginBottom: '1.25rem'
           }}>
-            Smart Civic Issue Reporting & Real-Time Tracking
+            <Activity size={14} />
+            <span>Civic Dispatch System</span>
+          </div>
+
+          <h1 style={{ fontSize: '2.6rem', fontWeight: 800, lineHeight: 1.2, marginBottom: '1rem', color: 'var(--text-primary)' }}>
+            Smart City Operations & Real-Time Incident Response
           </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '1.15rem', marginBottom: '2rem' }}>
-            Empowering citizens to report municipal concerns like potholes, broken streetlights, and sanitation issues directly to local authorities.
+          <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', marginBottom: '2.25rem', lineHeight: 1.6 }}>
+            Empowering citizens to report critical municipal concerns—from structural road hazards to sanitation bursts—directly into local city engineering triage workflows.
           </p>
 
-          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
             <Link to="/report" className="btn btn-primary" style={{ padding: '0.85rem 1.75rem' }}>
-              <span>Report an Issue</span>
-              <ArrowRight size={18} />
+              <Send size={16} />
+              <span>Submit Issue Report</span>
             </Link>
             <Link to="/explore" className="btn btn-secondary" style={{ padding: '0.85rem 1.75rem' }}>
-              Explore Reported Issues
+              <span>Explore Public Feed</span>
+              <ArrowRight size={16} />
             </Link>
           </div>
         </div>
       </div>
 
-      {/* Common Issue Categories */}
+      {/* Real-time Civic Impact Counters */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem' }}>
+        <div className="panel" style={{ padding: '1.5rem', borderLeft: '4px solid #10B981' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>SLA Resolution Rate</span>
+            <CheckCircle2 color="#10B981" size={20} />
+          </div>
+          <h2 className="font-mono" style={{ fontSize: '2.2rem', fontWeight: 800, marginTop: '0.4rem', color: 'var(--text-primary)' }}>
+            88.4%
+          </h2>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.78rem', marginTop: '0.2rem' }}>On-time municipal resolution</p>
+        </div>
+
+        <div className="panel" style={{ padding: '1.5rem', borderLeft: '4px solid #F59E0B' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Avg Response Velocity</span>
+            <Clock color="#F59E0B" size={20} />
+          </div>
+          <h2 className="font-mono" style={{ fontSize: '2.2rem', fontWeight: 800, marginTop: '0.4rem', color: 'var(--text-primary)' }}>
+            &lt; 48 Hrs
+          </h2>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.78rem', marginTop: '0.2rem' }}>Dispatch to field assignment</p>
+        </div>
+
+        <div className="panel" style={{ padding: '1.5rem', borderLeft: '4px solid #3B82F6' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Dispatches Resolved</span>
+            <TrendingUp color="#3B82F6" size={20} />
+          </div>
+          <h2 className="font-mono" style={{ fontSize: '2.2rem', fontWeight: 800, marginTop: '0.4rem', color: 'var(--text-primary)' }}>
+            1,420+
+          </h2>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.78rem', marginTop: '0.2rem' }}>Verified community issues</p>
+        </div>
+      </div>
+
+      {/* Quick-Launch Category Reporting Grid */}
       <div>
-        <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '1.25rem', color: 'var(--text-primary)' }}>
-          Report Public Issues in Your Neighborhood
+        <h2 style={{ fontSize: '1.35rem', fontWeight: 700, marginBottom: '1.25rem', color: 'var(--text-primary)' }}>
+          Quick-Launch Category Reporting
         </h2>
 
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', 
-          gap: '1.25rem' 
-        }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.25rem' }}>
           {categories.map((cat, idx) => {
             const Icon = cat.icon;
             return (
-              <div key={idx} className="card" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <div key={idx} className="panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
                 <div style={{ 
-                  width: '44px', 
-                  height: '44px', 
+                  width: '42px', 
+                  height: '42px', 
                   borderRadius: 'var(--radius-sm)', 
                   background: `${cat.color}15`, 
+                  border: `1px solid ${cat.color}35`,
                   display: 'flex', 
                   alignItems: 'center', 
                   justifyContent: 'center' 
                 }}>
-                  <Icon size={24} color={cat.color} />
+                  <Icon size={22} color={cat.color} />
                 </div>
-                <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>{cat.title}</h3>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{cat.desc}</p>
-                <Link to="/report" style={{ 
-                  color: 'var(--brand-primary)', 
-                  fontSize: '0.85rem', 
-                  fontWeight: 600, 
-                  marginTop: 'auto',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.3rem'
-                }}>
-                  File Report <ArrowRight size={14} />
+
+                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)' }}>{cat.title}</h3>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem' }}>{cat.desc}</p>
+
+                <Link 
+                  to={`/report?category=${cat.categoryVal}`} 
+                  style={{ 
+                    color: 'var(--brand-blue)', 
+                    fontSize: '0.85rem', 
+                    fontWeight: 600, 
+                    marginTop: 'auto',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.35rem'
+                  }}
+                >
+                  File Category Report <ArrowRight size={14} />
                 </Link>
               </div>
             );
           })}
-        </div>
-      </div>
-
-      {/* Quick Platform Metrics */}
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-        gap: '1.25rem' 
-      }}>
-        <div className="card" style={{ textAlign: 'center', padding: '1.5rem' }}>
-          <Clock size={28} color="#facc15" style={{ marginBottom: '0.5rem' }} />
-          <h4 style={{ fontSize: '1.75rem', fontWeight: 800 }}>&lt; 48 Hours</h4>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Average Response Time</p>
-        </div>
-        <div className="card" style={{ textAlign: 'center', padding: '1.5rem' }}>
-          <CheckCircle2 size={28} color="#4ade80" style={{ marginBottom: '0.5rem' }} />
-          <h4 style={{ fontSize: '1.75rem', fontWeight: 800 }}>88.4%</h4>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Resolution Rate</p>
-        </div>
-        <div className="card" style={{ textAlign: 'center', padding: '1.5rem' }}>
-          <TrendingUp size={28} color="#38bdf8" style={{ marginBottom: '0.5rem' }} />
-          <h4 style={{ fontSize: '1.75rem', fontWeight: 800 }}>1,420+</h4>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Issues Resolved</p>
         </div>
       </div>
     </div>

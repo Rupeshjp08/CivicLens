@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { 
   ShieldAlert, 
   FileText, 
@@ -9,7 +9,10 @@ import {
   TrendingUp, 
   ArrowRight,
   Sliders,
-  BarChart3
+  BarChart3,
+  MapPin,
+  Activity,
+  Zap
 } from 'lucide-react';
 import { api } from '../../services/api';
 
@@ -40,108 +43,138 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
       {/* Header Banner */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <ShieldAlert color="#818cf8" size={24} />
-            <h1 style={{ fontSize: '1.85rem', fontWeight: 800 }}>Admin Dashboard</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.25rem' }}>
+            <ShieldAlert color="#3B82F6" size={24} />
+            <h1 style={{ fontSize: '1.85rem', fontWeight: 800 }}>Admin Operations Center</h1>
           </div>
           <p style={{ color: 'var(--text-secondary)' }}>
-            Developer 3 Portal: Municipal Command & Operational Center
+            Central Municipal Command: Incident Triage, Field Dispatches & Analytics.
           </p>
         </div>
 
         <div style={{ display: 'flex', gap: '0.75rem' }}>
           <Link to="/admin/management" className="btn btn-secondary">
             <Sliders size={16} />
-            <span>Manage Issues</span>
+            <span>Triage Table</span>
+          </Link>
+          <Link to="/admin/hotspots" className="btn btn-secondary">
+            <MapPin size={16} color="#3B82F6" />
+            <span>Hotspot Map</span>
           </Link>
           <Link to="/admin/analytics" className="btn btn-primary">
             <BarChart3 size={16} />
-            <span>View Analytics</span>
+            <span>Analytics Engine</span>
           </Link>
         </div>
       </div>
 
-      {/* Metric Cards */}
+      {/* Operational Metric Cards */}
       <div style={{ 
         display: 'grid', 
         gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-        gap: '1.25rem',
-        marginBottom: '2rem'
+        gap: '1.25rem'
       }}>
-        <div className="card" style={{ borderLeft: '4px solid #38bdf8' }}>
+        <div className="panel" style={{ padding: '1.5rem', borderLeft: '4px solid #38BDF8' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', fontWeight: 600 }}>Total Issues</span>
-            <FileText color="#38bdf8" size={20} />
+            <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Total Ingested Reports</span>
+            <FileText color="#38BDF8" size={20} />
           </div>
-          <h2 style={{ fontSize: '2rem', fontWeight: 800, marginTop: '0.5rem' }}>
+          <h2 className="font-mono" style={{ fontSize: '2.2rem', fontWeight: 800, marginTop: '0.4rem', color: 'var(--text-primary)' }}>
             {loading ? '...' : stats.total}
           </h2>
+          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Registered in database</span>
         </div>
 
-        <div className="card" style={{ borderLeft: '4px solid #facc15' }}>
+        <div className="panel" style={{ padding: '1.5rem', borderLeft: '4px solid #F59E0B' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', fontWeight: 600 }}>Pending Review</span>
-            <Clock color="#facc15" size={20} />
+            <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Pending Review</span>
+            <Clock color="#F59E0B" size={20} />
           </div>
-          <h2 style={{ fontSize: '2rem', fontWeight: 800, marginTop: '0.5rem' }}>
+          <h2 className="font-mono" style={{ fontSize: '2.2rem', fontWeight: 800, marginTop: '0.4rem', color: 'var(--text-primary)' }}>
             {loading ? '...' : stats.pending}
           </h2>
+          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Awaiting field triage</span>
         </div>
 
-        <div className="card" style={{ borderLeft: '4px solid #60a5fa' }}>
+        <div className="panel" style={{ padding: '1.5rem', borderLeft: '4px solid #3B82F6' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', fontWeight: 600 }}>In Progress</span>
-            <TrendingUp color="#60a5fa" size={20} />
+            <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Field Work In Progress</span>
+            <TrendingUp color="#3B82F6" size={20} />
           </div>
-          <h2 style={{ fontSize: '2rem', fontWeight: 800, marginTop: '0.5rem' }}>
+          <h2 className="font-mono" style={{ fontSize: '2.2rem', fontWeight: 800, marginTop: '0.4rem', color: 'var(--text-primary)' }}>
             {loading ? '...' : stats.inProgress}
           </h2>
+          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Crews active on site</span>
         </div>
 
-        <div className="card" style={{ borderLeft: '4px solid #4ade80' }}>
+        <div className="panel" style={{ padding: '1.5rem', borderLeft: '4px solid #10B981' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', fontWeight: 600 }}>Resolved</span>
-            <CheckCircle color="#4ade80" size={20} />
+            <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Verified Resolved</span>
+            <CheckCircle color="#10B981" size={20} />
           </div>
-          <h2 style={{ fontSize: '2rem', fontWeight: 800, marginTop: '0.5rem' }}>
+          <h2 className="font-mono" style={{ fontSize: '2.2rem', fontWeight: 800, marginTop: '0.4rem', color: 'var(--text-primary)' }}>
             {loading ? '...' : stats.resolved}
           </h2>
+          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Closed ticket backlog</span>
         </div>
 
-        <div className="card" style={{ borderLeft: '4px solid #ef4444' }}>
+        <div className="panel" style={{ padding: '1.5rem', borderLeft: '4px solid #EF4444' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', fontWeight: 600 }}>Critical / High Priority</span>
-            <AlertTriangle color="#ef4444" size={20} />
+            <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>High / Critical Alerts</span>
+            <AlertTriangle color="#EF4444" size={20} />
           </div>
-          <h2 style={{ fontSize: '2rem', fontWeight: 800, marginTop: '0.5rem' }}>
+          <h2 className="font-mono" style={{ fontSize: '2.2rem', fontWeight: 800, marginTop: '0.4rem', color: '#EF4444' }}>
             {loading ? '...' : stats.highPriority}
           </h2>
+          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Immediate hazard priority</span>
         </div>
       </div>
 
-      {/* Admin Action Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
-        <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>Complaint Management</h3>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-            Review incoming citizen reports, update status (Pending ➔ In Progress ➔ Resolved), and adjust auto-calculated priority levels.
+      {/* Operational Module Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.35rem' }}>
+        <div className="panel" style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Sliders size={20} color="#3B82F6" />
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>Incident Triage Table</h3>
+          </div>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.6 }}>
+            Review incoming citizen reports, update status (Pending ➔ Field Work ➔ Resolved), adjust priority levels, and open the slide-over inspector drawer.
           </p>
-          <Link to="/admin/management" className="btn btn-secondary" style={{ marginTop: 'auto', width: 'fit-content' }}>
-            Open Management Table <ArrowRight size={16} />
+          <Link to="/admin/management" className="btn btn-primary" style={{ marginTop: 'auto', width: 'fit-content' }}>
+            <span>Open Triage Table</span>
+            <ArrowRight size={16} />
           </Link>
         </div>
 
-        <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>Civic Analytics & Metrics</h3>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-            Visualize department performance, response efficiency, category breakdowns, and municipal hot-spots.
+        <div className="panel" style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <MapPin size={20} color="#F59E0B" />
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>Hotspot Density Map</h3>
+          </div>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.6 }}>
+            Monitor sector workload distribution, dominant incident categories, and trigger emergency field unit dispatches per city sector.
+          </p>
+          <Link to="/admin/hotspots" className="btn btn-secondary" style={{ marginTop: 'auto', width: 'fit-content' }}>
+            <span>Open Hotspot Analyzer</span>
+            <ArrowRight size={16} />
+          </Link>
+        </div>
+
+        <div className="panel" style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <BarChart3 size={20} color="#10B981" />
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>Analytics & SLA Metrics</h3>
+          </div>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.6 }}>
+            Track overall resolution velocity, category distributions, community upvote volumes, and SLA compliance targets.
           </p>
           <Link to="/admin/analytics" className="btn btn-secondary" style={{ marginTop: 'auto', width: 'fit-content' }}>
-            Open Analytics Dashboard <ArrowRight size={16} />
+            <span>Open Analytics Engine</span>
+            <ArrowRight size={16} />
           </Link>
         </div>
       </div>
