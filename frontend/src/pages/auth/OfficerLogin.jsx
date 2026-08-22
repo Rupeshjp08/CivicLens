@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Truck, Lock, Mail, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Truck, Lock, Mail, ArrowRight } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { authService } from '../../services/authService';
 
@@ -68,6 +68,9 @@ export default function OfficerLogin() {
             <ArrowRight size={16} />
           </button>
         </form>
+        <p style={{ marginTop: '1.25rem', fontSize: '0.85rem', color: 'var(--text-secondary)', textAlign: 'center' }}>
+          <Link to="/" style={{ color: 'var(--text-muted)', fontWeight: 600 }}>Back to CivicLens</Link>
+        </p>
       </div>
     </div>
   );

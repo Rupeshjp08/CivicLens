@@ -34,7 +34,7 @@ export default function EmptyState({ type = 'empty', title, message, onRetry, ic
         <div className="empty-state-title">{title || 'Something went wrong'}</div>
         <div className="empty-state-message">{message || 'Unable to retrieve data. Please try again.'}</div>
         {onRetry && (
-          <button className="btn btn-secondary" onClick={onRetry} style={{ marginTop: 'var(--space-5)' }}>
+          <button type="button" className="btn btn-secondary" onClick={onRetry} style={{ marginTop: 'var(--space-5)' }}>
             <RefreshCw size={14} />
             <span>Retry</span>
           </button>

@@ -25,7 +25,7 @@ export default function IssueCluster({ complaints = [], onSelectComplaint, clust
   
   return (
     <div className="cluster-card">
-      <div className="cluster-header" onClick={() => setExpanded(!expanded)}>
+      <button type="button" className="cluster-header" onClick={() => setExpanded(!expanded)} aria-expanded={expanded}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
           {/* Stacked cards visual */}
           <div className="cluster-stack">
@@ -68,7 +68,7 @@ export default function IssueCluster({ complaints = [], onSelectComplaint, clust
           
           {expanded ? <ChevronUp size={16} color="var(--text-muted)" /> : <ChevronDown size={16} color="var(--text-muted)" />}
         </div>
-      </div>
+      </button>
       
       <div className={`cluster-items ${expanded ? 'expanded' : ''}`}>
         {complaints.map((complaint, idx) => (

@@ -45,7 +45,7 @@ export default function StatusBadge({ type = 'status', value, showIcon = false, 
     ? { fontSize: '10px', padding: '1px 7px' } 
     : {};
   
-  const displayLabel = type === 'priority' ? `${value}` : value;
+  const displayLabel = value;
   
   return (
     <span className={`badge ${config.badge}`} style={sizeStyles}>

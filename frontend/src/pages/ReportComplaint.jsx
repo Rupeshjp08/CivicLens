@@ -212,12 +212,13 @@ export default function ReportComplaint() {
 
       {/* Stepper Progress Bar */}
       <div className="panel" style={{ padding: '1rem 1.5rem', marginBottom: '1.75rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="report-stepper">
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <div style={{ 
               width: '32px', height: '32px', borderRadius: '50%', 
               background: currentStep >= 1 ? 'var(--brand-blue)' : 'var(--bg-panel-subtle)', 
-              color: '#ffffff', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem' 
+              color: currentStep >= 1 ? '#ffffff' : 'var(--text-muted)',
+              fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem'
             }}>
               1
             </div>
@@ -227,13 +228,14 @@ export default function ReportComplaint() {
             </div>
           </div>
 
-          <div style={{ flex: 1, height: '2px', background: 'var(--border-color)', margin: '0 1rem' }} />
+          <div className="report-stepper-line" />
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <div style={{ 
               width: '32px', height: '32px', borderRadius: '50%', 
               background: currentStep >= 2 ? 'var(--brand-blue)' : 'var(--bg-panel-subtle)', 
-              color: '#ffffff', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem' 
+              color: currentStep >= 2 ? '#ffffff' : 'var(--text-muted)',
+              fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem'
             }}>
               2
             </div>
@@ -243,13 +245,14 @@ export default function ReportComplaint() {
             </div>
           </div>
 
-          <div style={{ flex: 1, height: '2px', background: 'var(--border-color)', margin: '0 1rem' }} />
+          <div className="report-stepper-line" />
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <div style={{ 
               width: '32px', height: '32px', borderRadius: '50%', 
               background: currentStep >= 3 ? 'var(--brand-blue)' : 'var(--bg-panel-subtle)', 
-              color: '#ffffff', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem' 
+              color: currentStep >= 3 ? '#ffffff' : 'var(--text-muted)',
+              fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem'
             }}>
               3
             </div>

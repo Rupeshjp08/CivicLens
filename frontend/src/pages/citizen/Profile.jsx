@@ -36,8 +36,9 @@ export default function Profile() {
 
       <form onSubmit={handleSubmit} className="panel" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.35rem' }}>
         <div className="form-group" style={{ marginBottom: 0 }}>
-          <label>Full Legal Name</label>
+          <label htmlFor="profile-name">Full name</label>
           <input
+            id="profile-name"
             type="text"
             className="form-control"
             value={formData.name}
@@ -47,8 +48,9 @@ export default function Profile() {
         </div>
 
         <div className="form-group" style={{ marginBottom: 0 }}>
-          <label>Email Address</label>
+          <label htmlFor="profile-email">Email address</label>
           <input
+            id="profile-email"
             type="email"
             className="form-control"
             value={formData.email}
@@ -58,8 +60,9 @@ export default function Profile() {
         </div>
 
         <div className="form-group" style={{ marginBottom: 0 }}>
-          <label>Phone Number</label>
+          <label htmlFor="profile-phone">Phone number</label>
           <input
+            id="profile-phone"
             type="text"
             className="form-control font-mono"
             value={formData.phone}
@@ -68,8 +71,9 @@ export default function Profile() {
         </div>
 
         <div className="form-group" style={{ marginBottom: 0 }}>
-          <label>Primary Resident Sector / Neighborhood</label>
+          <label htmlFor="profile-address">Neighborhood or sector</label>
           <input
+            id="profile-address"
             type="text"
             className="form-control"
             value={formData.address}

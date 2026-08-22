@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useParams } from 'react-router-dom';
 import { Search, MapPin, Calendar, CheckCircle, User, FileText } from 'lucide-react';
 import { complaintService } from '../services/complaintService';
 import StatusBadge from '../components/StatusBadge';
 import PriorityScore from '../components/PriorityScore';
 import EmptyState from '../components/EmptyState';
 
-export default function TrackComplaint() {
+export default function TrackComplaint({ lookupId = '' }) {
   const [searchParams] = useSearchParams();
-  const initialId = searchParams.get('id') || '';
+  const { id: routeId } = useParams();
+  const initialId = lookupId || searchParams.get('id') || routeId || '';
 
   const [searchId, setSearchId] = useState(initialId);
   const [complaint, setComplaint] = useState(null);
@@ -87,14 +88,16 @@ export default function TrackComplaint() {
 
       {/* Search Input Form */}
       <form onSubmit={handleSearch} className="panel" style={{ marginBottom: '2rem', padding: '1.25rem' }}>
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
+        <div className="track-search-row">
+          <label htmlFor="complaint-id-search" className="sr-only">Complaint ID</label>
           <input
+            id="complaint-id-search"
             type="text"
             className="form-control font-mono"
-            placeholder="Enter Complaint ID (e.g., CIV-2026-00101)"
+            placeholder="Enter Complaint ID (e.g., CIV-3913)"
             value={searchId}
             onChange={(e) => setSearchId(e.target.value)}
-            style={{ flex: 1 }}
+            autoComplete="off"
           />
           <button type="submit" className="btn btn-primary" disabled={loading}>
             <Search size={16} />

@@ -1,27 +1,27 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
-import Navbar from './components/Navbar';
 
-// Layouts
+import PublicLayout from './layouts/PublicLayout';
 import CitizenLayout from './layouts/CitizenLayout';
 import OfficerLayout from './layouts/OfficerLayout';
 
-// Auth Pages
-import RoleSelection from './pages/auth/RoleSelection';
 import CitizenLogin from './pages/auth/CitizenLogin';
 import OfficerLogin from './pages/auth/OfficerLogin';
+import Register from './pages/auth/Register';
 
-// Citizen Pages
 import Home from './pages/Home';
+import HowItWorks from './pages/HowItWorks';
+import About from './pages/About';
 import CitizenDashboard from './pages/citizen/CitizenDashboard';
 import ReportComplaint from './pages/ReportComplaint';
 import TrackComplaint from './pages/TrackComplaint';
 import ExploreComplaints from './pages/ExploreComplaints';
 import Notifications from './pages/citizen/Notifications';
 import Profile from './pages/citizen/Profile';
+import MyComplaints from './pages/citizen/MyComplaints';
+import CitizenComplaintDetail from './pages/citizen/CitizenComplaintDetail';
 
-// Officer & Municipal Operations Pages
 import OfficerDashboard from './pages/officer/OfficerDashboard';
 import Assignments from './pages/officer/Assignments';
 import OfficerComplaintDetail from './pages/officer/OfficerComplaintDetail';
@@ -42,26 +42,31 @@ export default function App() {
     <AuthProvider>
       <Router>
         <div className="app-container">
-          <Navbar />
-
           <Routes>
-            {/* Auth Gateways */}
-            <Route path="/login" element={<RoleSelection />} />
-            <Route path="/citizen/login" element={<CitizenLogin />} />
-            <Route path="/officer/login" element={<OfficerLogin />} />
-
-            {/* Citizen Portal */}
-            <Route element={<CitizenLayout />}>
+            <Route element={<PublicLayout />}>
               <Route path="/" element={<Home />} />
-              <Route path="/citizen/dashboard" element={<CitizenDashboard />} />
-              <Route path="/report" element={<ReportComplaint />} />
-              <Route path="/track" element={<TrackComplaint />} />
+              <Route path="/how-it-works" element={<HowItWorks />} />
               <Route path="/explore" element={<ExploreComplaints />} />
+              <Route path="/track" element={<TrackComplaint />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/login" element={<CitizenLogin />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/officer/login" element={<OfficerLogin />} />
+            </Route>
+
+            <Route path="/citizen/login" element={<Navigate to="/login" replace />} />
+            <Route path="/report" element={<Navigate to="/citizen/report" replace />} />
+
+            <Route element={<CitizenLayout />}>
+              <Route path="/citizen/dashboard" element={<CitizenDashboard />} />
+              <Route path="/citizen/report" element={<ReportComplaint />} />
+              <Route path="/citizen/complaints" element={<MyComplaints />} />
+              <Route path="/citizen/complaints/:id" element={<CitizenComplaintDetail />} />
+              <Route path="/citizen/explore" element={<ExploreComplaints />} />
               <Route path="/citizen/notifications" element={<Notifications />} />
               <Route path="/citizen/profile" element={<Profile />} />
             </Route>
 
-            {/* Officer Operations Center (Staff & Field Officers) */}
             <Route element={<OfficerLayout />}>
               <Route path="/officer/dashboard" element={<OfficerDashboard />} />
               <Route path="/officer/queue" element={<ComplaintManagement />} />
@@ -81,10 +86,9 @@ export default function App() {
               <Route path="/officer/audit-logs" element={<AuditLogs />} />
             </Route>
 
-            {/* Legacy Redirections to Officer Portal */}
             <Route path="/admin" element={<Navigate to="/officer/dashboard" replace />} />
-            <Route path="/admin/*" element={<Navigate to="/officer/dashboard" replace />} />
             <Route path="/admin/login" element={<Navigate to="/officer/login" replace />} />
+            <Route path="/admin/*" element={<Navigate to="/officer/dashboard" replace />} />
           </Routes>
         </div>
       </Router>

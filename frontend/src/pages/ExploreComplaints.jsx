@@ -176,7 +176,7 @@ export default function ExploreComplaints() {
           message="Adjust search query, area sector, or category dropdowns." 
         />
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '1.35rem' }}>
+        <div className="issue-card-grid">
           {filteredComplaints.map((item) => {
             const itemId = item.complaintId || item._id;
             const isUpvoted = upvotedItems[itemId];
