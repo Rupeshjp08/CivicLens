@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
-  Lightbulb, 
   Trash2, 
   Droplet, 
   Construction, 
@@ -15,6 +14,7 @@ import {
   Send
 } from 'lucide-react';
 import { api } from '../services/api';
+import KpiCard from '../components/KpiCard';
 
 export default function Home() {
   const [apiHealth, setApiHealth] = useState(null);
@@ -39,14 +39,14 @@ export default function Home() {
           <span style={{ fontSize: '0.88rem' }}><strong style={{ color: 'var(--text-primary)' }}>Municipal Mesh Health:</strong> {apiHealth ? apiHealth.message : 'Verifying node response...'}</span>
         </div>
         <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10B981' }} />
+          <span className="pulse-dot" style={{ width: '6px', height: '6px' }} />
           <span>Real-time Citizen Triage Active</span>
         </div>
       </div>
 
       {/* Hero Operational Banner */}
-      <div className="panel" style={{ padding: '3rem 2.25rem', background: '#111622', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ maxWidth: '820px' }}>
+      <div className="panel hero-mesh" style={{ padding: '3rem 2.25rem', background: '#0D131D', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ maxWidth: '820px', position: 'relative', zIndex: 2 }}>
           <div style={{ 
             display: 'inline-flex', 
             alignItems: 'center', 
@@ -86,40 +86,31 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Real-time Civic Impact Counters */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem' }}>
-        <div className="panel" style={{ padding: '1.5rem', borderLeft: '4px solid #10B981' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>SLA Resolution Rate</span>
-            <CheckCircle2 color="#10B981" size={20} />
-          </div>
-          <h2 className="font-mono" style={{ fontSize: '2.2rem', fontWeight: 800, marginTop: '0.4rem', color: 'var(--text-primary)' }}>
-            88.4%
-          </h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.78rem', marginTop: '0.2rem' }}>On-time municipal resolution</p>
-        </div>
-
-        <div className="panel" style={{ padding: '1.5rem', borderLeft: '4px solid #F59E0B' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Avg Response Velocity</span>
-            <Clock color="#F59E0B" size={20} />
-          </div>
-          <h2 className="font-mono" style={{ fontSize: '2.2rem', fontWeight: 800, marginTop: '0.4rem', color: 'var(--text-primary)' }}>
-            &lt; 48 Hrs
-          </h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.78rem', marginTop: '0.2rem' }}>Dispatch to field assignment</p>
-        </div>
-
-        <div className="panel" style={{ padding: '1.5rem', borderLeft: '4px solid #3B82F6' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Dispatches Resolved</span>
-            <TrendingUp color="#3B82F6" size={20} />
-          </div>
-          <h2 className="font-mono" style={{ fontSize: '2.2rem', fontWeight: 800, marginTop: '0.4rem', color: 'var(--text-primary)' }}>
-            1,420+
-          </h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.78rem', marginTop: '0.2rem' }}>Verified community issues</p>
-        </div>
+      {/* Real-time Civic Impact Counters using KpiCard */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem' }}>
+        <KpiCard
+          value="88.4%"
+          label="SLA Resolution Rate"
+          subtitle="On-time municipal resolution"
+          icon={CheckCircle2}
+          accentColor="#10B981"
+          trend={{ direction: 'up', value: '4.2% vs last month' }}
+        />
+        <KpiCard
+          value="< 48 Hrs"
+          label="Avg Response Velocity"
+          subtitle="Dispatch to field assignment"
+          icon={Clock}
+          accentColor="#F59E0B"
+        />
+        <KpiCard
+          value="1,420+"
+          label="Dispatches Resolved"
+          subtitle="Verified community issues"
+          icon={TrendingUp}
+          accentColor="#3B82F6"
+          trend={{ direction: 'up', value: '12% this week' }}
+        />
       </div>
 
       {/* Quick-Launch Category Reporting Grid */}
@@ -132,7 +123,7 @@ export default function Home() {
           {categories.map((cat, idx) => {
             const Icon = cat.icon;
             return (
-              <div key={idx} className="panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+              <div key={idx} className="panel panel-interactive" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
                 <div style={{ 
                   width: '42px', 
                   height: '42px', 

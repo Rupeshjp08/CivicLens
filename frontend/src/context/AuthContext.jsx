@@ -11,15 +11,7 @@ export function AuthProvider({ children }) {
   });
 
   const switchRole = (newRole) => {
-    if (newRole === 'ADMIN') {
-      setUser({
-        id: 'adm-1',
-        name: 'Administrator Operations',
-        email: 'admin@govtech.city',
-        role: 'ADMIN',
-        department: 'Municipal Operations Center'
-      });
-    } else if (newRole === 'OFFICER') {
+    if (newRole === 'OFFICER') {
       setUser({
         id: 'off-1',
         name: 'Eng. Marcus Vance',
@@ -38,7 +30,8 @@ export function AuthProvider({ children }) {
   };
 
   const login = (role, userData) => {
-    setUser({ ...userData, role });
+    const assignedRole = role === 'OFFICER' ? 'OFFICER' : 'CITIZEN';
+    setUser({ ...userData, role: assignedRole });
   };
 
   const logout = () => {

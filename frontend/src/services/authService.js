@@ -5,19 +5,6 @@ export const authService = {
     // Simulates API delay
     await new Promise(r => setTimeout(r, 400));
 
-    if (role === 'ADMIN') {
-      return {
-        success: true,
-        user: {
-          id: 'adm-1',
-          name: 'Administrator Operations',
-          email: credentials.email || 'admin@govtech.city',
-          role: 'ADMIN',
-          department: 'Municipal Command'
-        }
-      };
-    }
-
     if (role === 'OFFICER') {
       const officer = mockOfficers[0];
       return {
