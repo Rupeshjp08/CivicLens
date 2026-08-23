@@ -39,7 +39,7 @@ export default function PublicHeader() {
         </nav>
 
         <div className="header-actions">
-          <Link to="/login" className="btn btn-secondary btn-sm desktop-nav">
+          <Link to="/signin" className="btn btn-secondary btn-sm desktop-nav">
             Sign In
           </Link>
           <Link to="/citizen/report" className="btn btn-primary btn-sm desktop-nav">
@@ -68,7 +68,7 @@ export default function PublicHeader() {
             {link.label}
           </NavLink>
         ))}
-        <Link to="/login" className="btn btn-secondary" onClick={() => setOpen(false)}>
+        <Link to="/signin" className="btn btn-secondary" onClick={() => setOpen(false)}>
           Sign In
         </Link>
         <Link to="/citizen/report" className="btn btn-primary" onClick={() => setOpen(false)}>

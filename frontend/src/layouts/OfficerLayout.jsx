@@ -54,14 +54,49 @@ export default function OfficerLayout() {
           >
             {mobileOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
-          <span className="header-brand" style={{ fontSize: 'var(--text-lg)' }}>
-            <span className="brand-icon-box" aria-hidden="true">
-              <Building2 size={16} />
+          <span className="header-brand" style={{ fontSize: '1.25rem', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: '0.45rem' }}>
+            <span
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: 8,
+                background: '#16A34A',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#FFFFFF',
+                boxShadow: '0 3px 8px rgba(22, 163, 74, 0.3)'
+              }}
+              aria-hidden="true"
+            >
+              <Building2 size={17} />
             </span>
-            CivicLens
+            <span>
+              <span style={{ color: '#0F172A', fontWeight: 800 }}>Civic</span>
+              <span style={{ color: '#16A34A', fontWeight: 800 }}>Lens</span>
+            </span>
           </span>
         </div>
-        <span className="text-caption">Municipal operations</span>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <span
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+              padding: '0.3rem 0.75rem',
+              borderRadius: '9999px',
+              background: 'rgba(22, 163, 74, 0.08)',
+              border: '1px solid rgba(22, 163, 74, 0.25)',
+              color: '#16A34A',
+              fontSize: '0.78rem',
+              fontWeight: 700
+            }}
+          >
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#16A34A' }}></span>
+            Municipal operations
+          </span>
+        </div>
       </header>
 
       <div className="officer-body">
@@ -95,7 +130,7 @@ export default function OfficerLayout() {
                   letterSpacing: '0.04em'
                 }}
               >
-                Operations
+                OPERATIONS MENU
               </span>
             )}
             <button
@@ -146,16 +181,41 @@ export default function OfficerLayout() {
             {(!collapsed || mobileOpen) && (
               <div
                 style={{
-                  padding: 'var(--space-3)',
-                  background: 'var(--bg-elevated)',
-                  borderRadius: 'var(--radius-sm)'
+                  padding: '0.75rem',
+                  background: '#FFFFFF',
+                  border: '1px solid #E2E8F0',
+                  boxShadow: '0 2px 8px rgba(15, 23, 42, 0.04)',
+                  borderRadius: 'var(--radius-sm)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.65rem'
                 }}
               >
-                <div style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--text-primary)' }}>
-                  {user?.name || 'Officer'}
+                <div
+                  style={{
+                    width: 34,
+                    height: 34,
+                    borderRadius: '50%',
+                    background: 'rgba(22, 163, 74, 0.1)',
+                    color: '#16A34A',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '0.85rem',
+                    fontWeight: 800,
+                    flexShrink: 0
+                  }}
+                >
+                  MV
                 </div>
-                <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>
-                  {user?.department || 'Municipal staff'}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#0F172A', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {user?.name || 'Eng. Marcus Vance'}
+                  </div>
+                  <div style={{ fontSize: 11, color: '#64748B', display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#16A34A' }}></span>
+                    {user?.department || 'Roads & Infrastructure'}
+                  </div>
                 </div>
               </div>
             )}

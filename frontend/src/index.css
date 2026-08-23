@@ -124,81 +124,77 @@
 }
 
 [data-theme="officer"] {
-  --bg-canvas: #0F172A;
-  --bg-surface: #1E293B;
-  --bg-elevated: #243044;
-  --bg-hover: #2A3A51;
-  --bg-active: #334155;
-  --bg-panel: #1E293B;
-  --bg-panel-subtle: #162032;
+  --bg-canvas: #060B14;
+  --bg-surface: rgba(11, 18, 30, 0.85);
+  --bg-elevated: rgba(18, 28, 44, 0.75);
+  --bg-hover: rgba(30, 44, 68, 0.6);
+  --bg-active: rgba(40, 58, 88, 0.7);
+  --bg-panel: rgba(15, 25, 38, 0.75);
+  --bg-panel-subtle: rgba(10, 16, 26, 0.65);
 
-  --border-color: #334155;
-  --border-subtle: rgba(148, 163, 184, 0.12);
-  --border-medium: #475569;
-  --border-focus: #60A5FA;
-  --border-glow: transparent;
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-subtle: rgba(255, 255, 255, 0.05);
+  --border-medium: rgba(255, 255, 255, 0.15);
+  --border-focus: #38BDF8;
+  --border-glow: rgba(56, 189, 248, 0.3);
 
-  --text-primary: #F1F5F9;
+  --text-primary: #F8FAFC;
   --text-secondary: #CBD5E1;
   --text-muted: #94A3B8;
-  --text-disabled: #64748B;
-  --text-inverse: #0F172A;
+  --text-disabled: #475569;
+  --text-inverse: #060B14;
 
-  --primary: #3B82F6;
-  --primary-hover: #2563EB;
-  --primary-muted: rgba(59, 130, 246, 0.16);
-  --brand-blue: #3B82F6;
-  --brand-blue-hover: #2563EB;
-  --brand-blue-muted: rgba(59, 130, 246, 0.16);
-  --brand-blue-glow: transparent;
+  --primary: #38BDF8;
+  --primary-hover: #0284C7;
+  --primary-muted: rgba(56, 189, 248, 0.14);
+  --brand-blue: #38BDF8;
+  --brand-blue-hover: #0284C7;
+  --brand-blue-muted: rgba(56, 189, 248, 0.14);
+  --brand-blue-glow: rgba(56, 189, 248, 0.25);
 
-  --success: #34D399;
-  --warning: #FBBF24;
-  --danger: #F87171;
-  --info: #60A5FA;
+  --success: #10B981;
+  --warning: #F59E0B;
+  --danger: #EF4444;
+  --info: #38BDF8;
 
-  --status-critical: #F87171;
-  --status-critical-bg: rgba(248, 113, 113, 0.12);
-  --status-critical-border: rgba(248, 113, 113, 0.28);
+  --status-critical: #EF4444;
+  --status-critical-bg: rgba(239, 68, 68, 0.12);
+  --status-critical-border: rgba(239, 68, 68, 0.3);
 
-  --status-high: #FB923C;
-  --status-high-bg: rgba(251, 146, 60, 0.12);
-  --status-high-border: rgba(251, 146, 60, 0.28);
+  --status-high: #F97316;
+  --status-high-bg: rgba(249, 115, 22, 0.12);
+  --status-high-border: rgba(249, 115, 22, 0.3);
 
-  --status-amber: #FBBF24;
-  --status-amber-bg: rgba(251, 191, 36, 0.12);
-  --status-amber-border: rgba(251, 191, 36, 0.28);
+  --status-amber: #F59E0B;
+  --status-amber-bg: rgba(245, 158, 11, 0.12);
+  --status-amber-border: rgba(245, 158, 11, 0.3);
 
-  --status-emerald: #34D399;
-  --status-emerald-bg: rgba(52, 211, 153, 0.12);
-  --status-emerald-border: rgba(52, 211, 153, 0.28);
+  --status-emerald: #10B981;
+  --status-emerald-bg: rgba(16, 185, 129, 0.12);
+  --status-emerald-border: rgba(16, 185, 129, 0.3);
 
-  --status-blue: #60A5FA;
-  --status-blue-bg: rgba(96, 165, 250, 0.12);
-  --status-blue-border: rgba(96, 165, 250, 0.28);
+  --status-blue: #38BDF8;
+  --status-blue-bg: rgba(56, 189, 248, 0.12);
+  --status-blue-border: rgba(56, 189, 248, 0.3);
 
-  --status-purple: #C4B5FD;
-  --status-purple-bg: rgba(167, 139, 250, 0.12);
-  --status-purple-border: rgba(167, 139, 250, 0.28);
+  --status-purple: #C084FC;
+  --status-purple-bg: rgba(192, 132, 252, 0.12);
+  --status-purple-border: rgba(192, 132, 252, 0.3);
 
   --status-cyan: #22D3EE;
-  --status-cyan-bg: rgba(34, 211, 238, 0.10);
-  --status-cyan-border: rgba(34, 211, 238, 0.24);
+  --status-cyan-bg: rgba(34, 211, 238, 0.12);
+  --status-cyan-border: rgba(34, 211, 238, 0.3);
 
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.25);
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.28);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.32);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.36);
-  --shadow-xl: 0 16px 40px rgba(0, 0, 0, 0.4);
-  --shadow-panel: 0 1px 3px rgba(0, 0, 0, 0.28);
-  --shadow-glow-blue: none;
-  --shadow-glow-red: none;
-  --shadow-glow-green: none;
-  --shadow-glow-amber: none;
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.55);
+  --shadow-xl: 0 24px 60px rgba(0, 0, 0, 0.65);
+  --shadow-panel: 0 12px 32px rgba(0, 0, 0, 0.4);
 
-  --focus-ring: #60A5FA;
-  --focus-ring-offset: #0F172A;
-  --header-height: 56px;
+  --focus-ring: #38BDF8;
+  --focus-ring-offset: #060B14;
+  --header-height: 60px;
 }
 
 /* ═══════════════════════════════════════════════════
@@ -2229,3 +2225,419 @@ textarea.form-control {
     justify-content: center;
   }
 }
+
+/* =========================================================
+   CIVICLENS OFFICER DISPATCH PORTAL LOGIN PAGE
+   ========================================================= */
+
+.officer-login-wrap {
+  width: min(1240px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 40px 0 64px;
+}
+
+.officer-login-grid {
+  display: grid;
+  grid-template-columns: 1.12fr 0.88fr;
+  gap: 48px;
+  align-items: start;
+  position: relative;
+}
+
+.officer-left-hero {
+  position: relative;
+}
+
+.officer-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  margin-top: 28px;
+}
+
+.officer-feature-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.03);
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+  position: relative;
+  z-index: 2;
+}
+
+.officer-feature-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+  border-color: rgba(22, 163, 74, 0.4);
+}
+
+.officer-feature-icon-box {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: rgba(22, 163, 74, 0.1);
+  color: #16A34A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.officer-feature-card h3 {
+  font-size: 1.05rem;
+  font-weight: 750;
+  color: #0F172A;
+  margin: 0 0 6px;
+}
+
+.officer-feature-card p {
+  font-size: 0.88rem;
+  color: #64748B;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.officer-login-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-top: 4px solid #16A34A;
+  border-radius: 20px;
+  padding: 36px 32px;
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.08);
+  position: relative;
+  z-index: 2;
+}
+
+.officer-btn-primary {
+  width: 100%;
+  height: 48px;
+  background: #16A34A;
+  color: #FFFFFF;
+  border: 1px solid #15803D;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: background-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25);
+}
+
+.officer-btn-primary:hover:not(:disabled) {
+  background: #15803D;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(22, 163, 74, 0.35);
+}
+
+.officer-btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.officer-btn-primary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.officer-btn-secondary {
+  width: 100%;
+  height: 44px;
+  background: #FFFFFF;
+  color: #334155;
+  border: 1px solid #CBD5E1;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  text-decoration: none;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+.officer-btn-secondary:hover {
+  background: #F8FAFC;
+  border-color: #94A3B8;
+  color: #0F172A;
+}
+
+.officer-demo-card {
+  background: rgba(22, 163, 74, 0.05);
+  border: 1px solid rgba(22, 163, 74, 0.2);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-top: 20px;
+}
+
+.officer-trust-bar {
+  background: #0F172A;
+  color: #FFFFFF;
+  border-radius: 16px;
+  padding: 24px 32px;
+  margin-top: 56px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.15);
+}
+
+.officer-trust-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.officer-trust-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #4ADE80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.officer-trust-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #F8FAFC;
+  line-height: 1.2;
+}
+
+.officer-trust-sub {
+  font-size: 0.8rem;
+  color: #94A3B8;
+  margin-top: 2px;
+}
+
+.officer-bg-map-pattern {
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  right: -20px;
+  bottom: -20px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.5;
+}
+
+@media (max-width: 1024px) {
+  .officer-login-grid {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+
+  .officer-trust-bar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .officer-login-wrap {
+    width: min(100% - 28px, 1240px);
+    padding: 24px 0 40px;
+  }
+
+  .officer-feature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .officer-login-card {
+    padding: 24px 20px;
+  }
+
+  .officer-trust-bar {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 20px;
+  }
+}
+
+/* =========================================================
+   LIVE MUNICIPAL MAP STYLING
+   ========================================================= */
+
+@keyframes mapPulse {
+  0% { transform: scale(0.85); opacity: 0.85; }
+  70% { transform: scale(2.2); opacity: 0; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+.custom-map-marker {
+  background: transparent !important;
+  border: none !important;
+}
+
+.leaflet-popup-content-wrapper {
+  background: var(--bg-panel, #1E293B) !important;
+  color: var(--text-primary, #F8FAFC) !important;
+  border: 1px solid var(--border-color, #334155);
+  border-radius: 12px !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35) !important;
+  padding: 0 !important;
+}
+
+.leaflet-popup-content {
+  margin: 0 !important;
+  line-height: 1.4 !important;
+}
+
+.leaflet-popup-tip {
+  background: var(--bg-panel, #1E293B) !important;
+  border: 1px solid var(--border-color, #334155);
+}
+
+.leaflet-container {
+  font-family: var(--font-family, sans-serif) !important;
+  background: #090C10 !important;
+}
+
+/* =========================================================
+   COMMAND CENTER GLASSMORPHISM OVERRIDES & SIDEBAR RECONSTRUCTION
+   ========================================================= */
+
+[data-theme="officer"] {
+  --bg-canvas: #F7F9F8;
+  --bg-surface: #FFFFFF;
+  --bg-elevated: #F1F5F9;
+  --bg-hover: #F8FAFC;
+  --bg-active: #E2E8F0;
+  --bg-panel: #FFFFFF;
+  --bg-panel-subtle: #F8FAFC;
+
+  --border-color: #E2E8F0;
+  --border-subtle: #F1F5F9;
+  --border-medium: #CBD5E1;
+  --border-focus: #16A34A;
+  --border-glow: rgba(22, 163, 74, 0.2);
+
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #64748B;
+  --text-disabled: #94A3B8;
+  --text-inverse: #FFFFFF;
+
+  --primary: #16A34A;
+  --primary-hover: #15803D;
+  --primary-muted: rgba(22, 163, 74, 0.1);
+  --brand-blue: #16A34A;
+  --brand-blue-hover: #15803D;
+  --brand-blue-muted: rgba(22, 163, 74, 0.1);
+  --brand-blue-glow: rgba(22, 163, 74, 0.2);
+
+  --success: #16A34A;
+  --warning: #F59E0B;
+  --danger: #EF4444;
+  --info: #2563EB;
+
+  --status-critical: #EF4444;
+  --status-critical-bg: rgba(239, 68, 68, 0.08);
+  --status-critical-border: rgba(239, 68, 68, 0.25);
+
+  --status-high: #F97316;
+  --status-high-bg: rgba(249, 115, 22, 0.08);
+  --status-high-border: rgba(249, 115, 22, 0.25);
+
+  --status-amber: #F59E0B;
+  --status-amber-bg: rgba(245, 158, 11, 0.08);
+  --status-amber-border: rgba(245, 158, 11, 0.25);
+
+  --status-emerald: #16A34A;
+  --status-emerald-bg: rgba(22, 163, 74, 0.08);
+  --status-emerald-border: rgba(22, 163, 74, 0.25);
+
+  --status-blue: #2563EB;
+  --status-blue-bg: rgba(37, 99, 235, 0.08);
+  --status-blue-border: rgba(37, 99, 235, 0.25);
+
+  --status-purple: #9333EA;
+  --status-purple-bg: rgba(147, 51, 234, 0.08);
+  --status-purple-border: rgba(147, 51, 234, 0.25);
+
+  --status-cyan: #0891B2;
+  --status-cyan-bg: rgba(8, 145, 178, 0.08);
+  --status-cyan-border: rgba(8, 145, 178, 0.25);
+
+  --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 6px 18px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.1);
+  --shadow-xl: 0 20px 48px rgba(15, 23, 42, 0.12);
+  --shadow-panel: 0 4px 16px rgba(15, 23, 42, 0.06);
+
+  --focus-ring: #16A34A;
+  --focus-ring-offset: #FFFFFF;
+  --header-height: 64px;
+}
+
+[data-theme="officer"] .officer-shell {
+  background: #F7F9F8 !important;
+  min-height: 100vh;
+}
+
+[data-theme="officer"] .officer-topbar {
+  background: #FFFFFF !important;
+  border-bottom: 1px solid #E2E8F0 !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04) !important;
+}
+
+[data-theme="officer"] .ops-sidebar,
+[data-theme="officer"] .admin-sidebar {
+  background: #FFFFFF !important;
+  border-right: 1px solid #E2E8F0 !important;
+  box-shadow: none !important;
+}
+
+.sidebar-link {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 10px 16px !important;
+  margin: 3px 12px !important;
+  border-radius: 10px !important;
+  font-size: 0.88rem !important;
+  font-weight: 600 !important;
+  color: #64748B !important;
+  transition: all 150ms ease !important;
+  border-left: 3px solid transparent !important;
+}
+
+.sidebar-link:hover {
+  color: #0F172A !important;
+  background: #F8FAFC !important;
+}
+
+.sidebar-link.active {
+  color: #16A34A !important;
+  background: rgba(22, 163, 74, 0.08) !important;
+  border-left: 3px solid #16A34A !important;
+  box-shadow: none !important;
+  font-weight: 750 !important;
+}
+
+[data-theme="officer"] .panel,
+[data-theme="officer"] .kpi-card,
+[data-theme="officer"] .table-container {
+  background: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05) !important;
+  border-radius: 16px !important;
+}
+
+[data-theme="officer"] .panel-interactive:hover,
+[data-theme="officer"] .kpi-card:hover {
+  transform: translateY(-2px) !important;
+  background: #FFFFFF !important;
+  border-color: rgba(22, 163, 74, 0.3) !important;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08) !important;
+}
+
+
+
+

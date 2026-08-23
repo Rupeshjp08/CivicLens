@@ -5,15 +5,16 @@ import { useDocumentTheme } from './useDocumentTheme';
 
 export default function PublicLayout() {
   const location = useLocation();
+  useDocumentTheme('public');
+
   const isOfficerLogin = location.pathname.startsWith('/officer/login');
-  useDocumentTheme(isOfficerLogin ? 'officer' : 'public');
 
   return (
     <div className="civic-shell">
       <a href="#main-content" className="skip-link">Skip to content</a>
       <PublicHeader />
       <main id="main-content" className="civic-main">
-        <div className={location.pathname === '/' ? 'landing-wrap' : 'content-container'}>
+        <div className={location.pathname === '/' ? 'landing-wrap' : isOfficerLogin ? 'officer-login-wrap' : 'content-container'}>
           <Outlet />
         </div>
       </main>

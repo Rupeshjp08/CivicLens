@@ -8,6 +8,7 @@ import OfficerLayout from './layouts/OfficerLayout';
 
 import CitizenLogin from './pages/auth/CitizenLogin';
 import OfficerLogin from './pages/auth/OfficerLogin';
+import RoleSelection from './pages/auth/RoleSelection';
 import Register from './pages/auth/Register';
 
 import Home from './pages/Home';
@@ -43,6 +44,7 @@ export default function App() {
               <Route path="/explore" element={<ExploreComplaints />} />
               <Route path="/track" element={<TrackComplaint />} />
               <Route path="/about" element={<About />} />
+              <Route path="/signin" element={<RoleSelection />} />
               <Route path="/login" element={<CitizenLogin />} />
               <Route path="/register" element={<Register />} />
               <Route path="/officer/login" element={<OfficerLogin />} />
