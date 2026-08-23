@@ -1,4 +1,13 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api';
+const getApiBaseUrl = () => {
+  let url = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || 'https://civiclens-siu8.onrender.com';
+  url = url.trim().replace(/\/+$/, '');
+  if (!url.endsWith('/api')) {
+    url += '/api';
+  }
+  return url;
+};
+
+const API_BASE = getApiBaseUrl();
 
 export const api = {
   /**

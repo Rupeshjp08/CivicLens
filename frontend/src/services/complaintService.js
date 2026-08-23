@@ -78,7 +78,7 @@ export const complaintService = {
       success: false,
       message: lastBackendOk
         ? `No complaint found for ${raw}.`
-        : 'Unable to reach the CivicLens API. Check that the backend is running on port 5000.'
+        : 'Unable to reach the CivicLens API. Please check your network connection.'
     };
   },
 
@@ -109,7 +109,7 @@ export const complaintService = {
 
     return {
       success: false,
-      message: 'Unable to submit this complaint to the CivicLens API. Confirm the backend is running on port 5000 and try again.'
+      message: 'Unable to submit this complaint to the CivicLens API. Please check your connection and try again.'
     };
   },
 
