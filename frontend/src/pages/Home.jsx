@@ -1,164 +1,116 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  Trash2, 
-  Droplet, 
-  Construction, 
-  ArrowRight, 
-  ShieldCheck,
-  CheckCircle2,
-  Clock,
-  TrendingUp,
-  Zap,
-  Activity,
-  Send
+import {
+  ArrowRight,
+  ClipboardList,
+  Gauge,
+  Landmark,
+  Eye,
+  Layers,
+  MapPin,
+  ShieldCheck
 } from 'lucide-react';
-import { api } from '../services/api';
-import KpiCard from '../components/KpiCard';
 
 export default function Home() {
-  const [apiHealth, setApiHealth] = useState(null);
-
-  useEffect(() => {
-    api.checkHealth().then(data => setApiHealth(data));
-  }, []);
-
-  const categories = [
-    { title: 'Potholes & Hazards', categoryVal: 'Pothole', icon: Construction, desc: 'Road damage, asphalt craters & structural hazards', color: '#F97316' },
-    { title: 'Sanitation & Overflow', categoryVal: 'Garbage Accumulation', icon: Trash2, desc: 'Uncollected waste, garbage overflow & bio-hazards', color: '#38BDF8' },
-    { title: 'Water Leakage & Mains', categoryVal: 'Water Leakage', icon: Droplet, desc: 'Pipe bursts, drainage blockages & clean water wastage', color: '#60A5FA' },
-    { title: 'Power Grid & Lighting', categoryVal: 'Broken Streetlight', icon: Zap, desc: 'Broken streetlights, blackouts & electrical hazards', color: '#FACC15' }
-  ];
-
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-      {/* Mesh System Status Indicator */}
-      <div className="panel" style={{ padding: '0.85rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-          <ShieldCheck size={18} color="#3B82F6" />
-          <span style={{ fontSize: '0.88rem' }}><strong style={{ color: 'var(--text-primary)' }}>Municipal Mesh Health:</strong> {apiHealth ? apiHealth.message : 'Verifying node response...'}</span>
+    <div className="landing">
+      <section className="landing-hero">
+        <p className="page-kicker">Municipal reporting for residents</p>
+        <h1 className="text-display">
+          Civic issues reported.
+          <br />
+          Prioritized intelligently.
+          <br />
+          Resolved transparently.
+        </h1>
+        <p className="landing-lead">
+          CivicLens gives residents a clear way to report potholes, lighting failures, sanitation
+          problems and water issues — and helps municipal officers focus on what needs attention first.
+        </p>
+        <div className="landing-actions">
+          <Link to="/citizen/report" className="btn btn-primary">
+            Report an Issue
+            <ArrowRight size={16} />
+          </Link>
+          <Link to="/track" className="btn btn-secondary">
+            Track Complaint
+          </Link>
         </div>
-        <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-          <span className="pulse-dot" style={{ width: '6px', height: '6px' }} />
-          <span>Real-time Citizen Triage Active</span>
-        </div>
-      </div>
+      </section>
 
-      {/* Hero Operational Banner */}
-      <div className="panel hero-mesh" style={{ padding: '3rem 2.25rem', background: '#0D131D', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ maxWidth: '820px', position: 'relative', zIndex: 2 }}>
-          <div style={{ 
-            display: 'inline-flex', 
-            alignItems: 'center', 
-            gap: '0.5rem', 
-            background: 'rgba(59, 130, 246, 0.12)', 
-            border: '1px solid rgba(59, 130, 246, 0.3)',
-            borderRadius: '4px',
-            padding: '0.25rem 0.75rem',
-            fontSize: '0.8rem',
-            color: '#60A5FA',
-            fontWeight: 700,
-            textTransform: 'uppercase',
-            letterSpacing: '0.04em',
-            marginBottom: '1.25rem'
-          }}>
-            <Activity size={14} />
-            <span>Civic Dispatch System</span>
-          </div>
-
-          <h1 style={{ fontSize: '2.6rem', fontWeight: 800, lineHeight: 1.2, marginBottom: '1rem', color: 'var(--text-primary)' }}>
-            Smart City Operations & Real-Time Incident Response
-          </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', marginBottom: '2.25rem', lineHeight: 1.6 }}>
-            Empowering citizens to report critical municipal concerns—from structural road hazards to sanitation bursts—directly into local city engineering triage workflows.
-          </p>
-
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-            <Link to="/report" className="btn btn-primary" style={{ padding: '0.85rem 1.75rem' }}>
-              <Send size={16} />
-              <span>Submit Issue Report</span>
-            </Link>
-            <Link to="/explore" className="btn btn-secondary" style={{ padding: '0.85rem 1.75rem' }}>
-              <span>Explore Public Feed</span>
-              <ArrowRight size={16} />
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* Real-time Civic Impact Counters using KpiCard */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem' }}>
-        <KpiCard
-          value="88.4%"
-          label="SLA Resolution Rate"
-          subtitle="On-time municipal resolution"
-          icon={CheckCircle2}
-          accentColor="#10B981"
-          trend={{ direction: 'up', value: '4.2% vs last month' }}
-        />
-        <KpiCard
-          value="< 48 Hrs"
-          label="Avg Response Velocity"
-          subtitle="Dispatch to field assignment"
-          icon={Clock}
-          accentColor="#F59E0B"
-        />
-        <KpiCard
-          value="1,420+"
-          label="Dispatches Resolved"
-          subtitle="Verified community issues"
-          icon={TrendingUp}
-          accentColor="#3B82F6"
-          trend={{ direction: 'up', value: '12% this week' }}
-        />
-      </div>
-
-      {/* Quick-Launch Category Reporting Grid */}
-      <div>
-        <h2 style={{ fontSize: '1.35rem', fontWeight: 700, marginBottom: '1.25rem', color: 'var(--text-primary)' }}>
-          Quick-Launch Category Reporting
-        </h2>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.25rem' }}>
-          {categories.map((cat, idx) => {
-            const Icon = cat.icon;
+      <section className="landing-section">
+        <h2>How CivicLens works</h2>
+        <div className="landing-steps">
+          {[
+            { n: '01', title: 'Report', icon: ClipboardList, text: 'Describe the issue, add a location, and attach a photo when you have one.' },
+            { n: '02', title: 'Smart Prioritization', icon: Gauge, text: 'The Smart Priority Engine scores urgency using category, support, time pending and location sensitivity.' },
+            { n: '03', title: 'Municipal Action', icon: Landmark, text: 'Officers review the priority queue, inspect details, and update status as work proceeds.' },
+            { n: '04', title: 'Transparent Resolution', icon: Eye, text: 'Use your complaint ID anytime to see status, priority, and related reports.' }
+          ].map((step) => {
+            const Icon = step.icon;
             return (
-              <div key={idx} className="panel panel-interactive" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-                <div style={{ 
-                  width: '42px', 
-                  height: '42px', 
-                  borderRadius: 'var(--radius-sm)', 
-                  background: `${cat.color}15`, 
-                  border: `1px solid ${cat.color}35`,
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'center' 
-                }}>
-                  <Icon size={22} color={cat.color} />
-                </div>
-
-                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)' }}>{cat.title}</h3>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem' }}>{cat.desc}</p>
-
-                <Link 
-                  to={`/report?category=${cat.categoryVal}`} 
-                  style={{ 
-                    color: 'var(--brand-blue)', 
-                    fontSize: '0.85rem', 
-                    fontWeight: 600, 
-                    marginTop: 'auto',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '0.35rem'
-                  }}
-                >
-                  File Category Report <ArrowRight size={14} />
-                </Link>
-              </div>
+              <article key={step.n} className="panel landing-card">
+                <div className="landing-step-n">{step.n}</div>
+                <Icon size={20} color="var(--primary)" aria-hidden="true" />
+                <h3>{step.title}</h3>
+                <p>{step.text}</p>
+              </article>
             );
           })}
         </div>
-      </div>
+      </section>
+
+      <section className="landing-section">
+        <h2>Smart Priority Engine</h2>
+        <p className="landing-copy">
+          Not every complaint can be handled at once. CivicLens scores each report so officers can
+          see which issues are most urgent — and residents can see why.
+        </p>
+        <ul className="landing-factors">
+          {['Severity', 'Affected citizens', 'Location sensitivity', 'Time pending', 'Issue category', 'Related reports'].map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="landing-section">
+        <h2>Issue clusters</h2>
+        <p className="landing-copy">
+          When several people report the same kind of problem in the same area, CivicLens groups those
+          reports. Repeated complaints are treated as one larger civic issue, not isolated tickets.
+        </p>
+        <div className="panel landing-cluster-note">
+          <Layers size={18} color="var(--primary)" />
+          <span>Related reports are grouped by category and area from the live complaint records.</span>
+        </div>
+      </section>
+
+      <section className="landing-section">
+        <h2>Transparent status</h2>
+        <div className="landing-status-flow" aria-label="Complaint status flow">
+          <span>Reported</span>
+          <span className="landing-status-arrow" aria-hidden="true">→</span>
+          <span>In Progress</span>
+          <span className="landing-status-arrow" aria-hidden="true">→</span>
+          <span>Resolved</span>
+        </div>
+      </section>
+
+      <section className="landing-cta panel">
+        <div>
+          <h2>See an issue in your neighborhood?</h2>
+          <p>Report it. You will receive a complaint ID you can track.</p>
+        </div>
+        <Link to="/citizen/report" className="btn btn-primary">
+          Report it
+          <MapPin size={16} />
+        </Link>
+      </section>
+
+      <p className="landing-trust">
+        <ShieldCheck size={14} aria-hidden="true" />
+        Public tracking uses the complaint reference (for example CIV-3913), not internal database ids.
+      </p>
     </div>
   );
 }

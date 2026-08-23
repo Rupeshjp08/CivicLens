@@ -1,103 +1,60 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Activity, MapPin, Clock, Users, Layers, Flame } from 'lucide-react';
-
-/**
- * Priority Score Calculation
- * Mirrors and extends backend priorityService.js logic
- * Produces a 0–100 numeric score for UI display
- */
-const CATEGORY_WEIGHTS = {
-  'Water Leakage': 3,
-  'Pothole': 3,
-  'Damaged Road': 2,
-  'Garbage Accumulation': 2,
-  'Broken Streetlight': 1,
-  'Other': 1
-};
-
-export function calculatePriorityScore(complaint) {
-  if (!complaint) return { total: 0, factors: [], level: 'Low' };
-  
-  const categoryWeight = CATEGORY_WEIGHTS[complaint.category] || 1;
-  const categoryScore = Math.min(categoryWeight * 15, 45);
-  const supportScore = Math.min((complaint.supportCount || 0) * 0.6, 25);
-  
-  const createdAt = complaint.createdAt ? new Date(complaint.createdAt) : new Date();
-  const hoursPending = Math.max(0, (Date.now() - createdAt.getTime()) / (1000 * 60 * 60));
-  const timeScore = Math.min(hoursPending * 0.3, 20);
-  
-  const baseScore = 10;
-  const total = Math.round(Math.min(categoryScore + supportScore + timeScore + baseScore, 100));
-  
-  let level = 'Low';
-  if (total >= 80) level = 'Critical';
-  else if (total >= 60) level = 'High';
-  else if (total >= 35) level = 'Medium';
-  
-  const factors = [
-    { label: 'Category Severity', value: Math.round(categoryScore), max: 45, color: '#F97316', icon: Layers },
-    { label: 'Community Support', value: Math.round(supportScore), max: 25, color: '#3B82F6', icon: Users },
-    { label: 'Time Pending', value: Math.round(timeScore), max: 20, color: '#F59E0B', icon: Clock },
-    { label: 'Base Score', value: baseScore, max: 10, color: '#64748B', icon: Activity }
-  ];
-  
-  return { total, factors, level };
-}
+import { calculatePriorityScore } from '../utils/priority';
 
 const LEVEL_COLORS = {
-  Critical: '#EF4444',
-  High: '#F97316',
-  Medium: '#F59E0B',
+  Critical: '#B91C1C',
+  High: '#C2410C',
+  Medium: '#B45309',
   Low: '#64748B'
 };
 
 const LEVEL_BG = {
-  Critical: 'rgba(239, 68, 68, 0.10)',
-  High: 'rgba(249, 115, 22, 0.10)',
-  Medium: 'rgba(245, 158, 11, 0.10)',
+  Critical: 'rgba(185, 28, 28, 0.10)',
+  High: 'rgba(194, 65, 12, 0.10)',
+  Medium: 'rgba(180, 83, 9, 0.10)',
   Low: 'rgba(148, 163, 184, 0.10)'
 };
 
-/**
- * PriorityScore Component
- * 
- * @param {Object} complaint - The complaint object
- * @param {'sm' | 'md' | 'lg'} size - Display size
- * @param {boolean} showBreakdown - Show factor breakdown
- */
-export default function PriorityScore({ complaint, size = 'md', showBreakdown = true }) {
-  const { total, factors, level } = calculatePriorityScore(complaint);
-  const color = LEVEL_COLORS[level];
+const FACTOR_ICONS = {
+  category: Layers,
+  support: Users,
+  location: MapPin,
+  time: Clock,
+  related: Activity
+};
+
+export default function PriorityScore({ complaint, allComplaints = [], size = 'md', showBreakdown = true }) {
+  const { total, factors, level, explanations } = calculatePriorityScore(complaint, allComplaints);
+  const color = LEVEL_COLORS[level] || LEVEL_COLORS.Low;
   const [animatedOffset, setAnimatedOffset] = useState(null);
   const ref = useRef(null);
-  
+
   const dimensions = {
     sm: { ring: 56, stroke: 4, fontSize: '1rem', labelSize: '0.55rem' },
     md: { ring: 90, stroke: 5, fontSize: '1.65rem', labelSize: '0.65rem' },
     lg: { ring: 120, stroke: 6, fontSize: '2.1rem', labelSize: '0.75rem' }
   };
-  
+
   const dim = dimensions[size];
   const radius = (dim.ring - dim.stroke * 2) / 2;
   const circumference = 2 * Math.PI * radius;
   const targetOffset = circumference - (total / 100) * circumference;
-  
+
   useEffect(() => {
     setAnimatedOffset(circumference);
-    const timer = setTimeout(() => {
-      setAnimatedOffset(targetOffset);
-    }, 100);
+    const timer = setTimeout(() => setAnimatedOffset(targetOffset), 80);
     return () => clearTimeout(timer);
   }, [total, circumference, targetOffset]);
-  
-  // Compact inline badge for table rows
+
   if (size === 'sm' && !showBreakdown) {
     return (
-      <span 
+      <span
         className="priority-compact"
-        style={{ 
-          background: LEVEL_BG[level], 
-          color: color,
+        title={`Priority score ${total} / 100 (${level})`}
+        style={{
+          background: LEVEL_BG[level],
+          color,
           border: `1px solid ${color}30`
         }}
       >
@@ -106,19 +63,12 @@ export default function PriorityScore({ complaint, size = 'md', showBreakdown = 
       </span>
     );
   }
-  
+
   return (
-    <div className="priority-gauge" ref={ref} style={{ flexDirection: size === 'lg' ? 'column' : 'row', alignItems: size === 'lg' ? 'center' : 'center' }}>
-      {/* Circular Ring Gauge */}
+    <div className="priority-gauge" ref={ref}>
       <div className="priority-gauge-ring" style={{ width: dim.ring, height: dim.ring, '--gauge-color': color }}>
-        <svg width={dim.ring} height={dim.ring}>
-          <circle
-            className="priority-gauge-bg"
-            cx={dim.ring / 2}
-            cy={dim.ring / 2}
-            r={radius}
-            strokeWidth={dim.stroke}
-          />
+        <svg width={dim.ring} height={dim.ring} aria-hidden="true">
+          <circle className="priority-gauge-bg" cx={dim.ring / 2} cy={dim.ring / 2} r={radius} strokeWidth={dim.stroke} />
           <circle
             className="priority-gauge-fill"
             cx={dim.ring / 2}
@@ -139,33 +89,44 @@ export default function PriorityScore({ complaint, size = 'md', showBreakdown = 
           </div>
         </div>
       </div>
-      
-      {/* Factor Breakdown */}
+
       {showBreakdown && (
         <div className="priority-factors">
-          {factors.map((factor, i) => {
-            const Icon = factor.icon;
+          <div className="text-caption" style={{ fontWeight: 700, marginBottom: 4 }}>
+            {total} / 100 · {level}
+          </div>
+          {factors.map((factor) => {
+            const Icon = FACTOR_ICONS[factor.key] || Activity;
             const pct = Math.round((factor.value / factor.max) * 100);
             return (
-              <div key={i} className="priority-factor">
+              <div key={factor.key || factor.label} className="priority-factor">
                 <span className="priority-factor-label">
-                  <Icon size={12} style={{ marginRight: 4, verticalAlign: 'middle', color: factor.color }} />
+                  <Icon size={12} style={{ marginRight: 4, verticalAlign: 'middle', color: factor.color || color }} />
                   {factor.label}
                 </span>
                 <div className="priority-factor-bar">
-                  <div 
-                    className="priority-factor-fill" 
-                    style={{ width: `${pct}%`, background: factor.color }}
+                  <div
+                    className="priority-factor-fill"
+                    style={{ width: `${pct}%`, background: factor.color || color }}
                   />
                 </div>
-                <span className="priority-factor-value" style={{ color: factor.color }}>
+                <span className="priority-factor-value" style={{ color: factor.color || color }}>
                   {factor.value}
                 </span>
               </div>
             );
           })}
+          {explanations?.length > 0 && (
+            <ul style={{ margin: '8px 0 0', paddingLeft: 18, color: 'var(--text-secondary)', fontSize: 'var(--text-xs)' }}>
+              {explanations.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          )}
         </div>
       )}
     </div>
   );
 }
+
+export { calculatePriorityScore };

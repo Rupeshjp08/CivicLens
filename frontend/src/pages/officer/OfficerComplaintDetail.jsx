@@ -12,6 +12,7 @@ import {
 import { complaintService } from '../../services/complaintService';
 import { officerService } from '../../services/officerService';
 import { useAuth } from '../../context/AuthContext';
+import { compressImage } from '../../utils/imageCompressor';
 import StatusBadge from '../../components/StatusBadge';
 import PriorityScore from '../../components/PriorityScore';
 import EmptyState from '../../components/EmptyState';
@@ -43,14 +44,15 @@ export default function OfficerComplaintDetail() {
     });
   }, [id]);
 
-  const handleImageUpload = (e) => {
+  const handleImageUpload = async (e) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setResolutionImage(reader.result);
-      };
-      reader.readAsDataURL(file);
+      try {
+        const compressed = await compressImage(file);
+        setResolutionImage(compressed);
+      } catch (err) {
+        console.error('Failed to compress image:', err);
+      }
     }
   };
 
@@ -60,7 +62,8 @@ export default function OfficerComplaintDetail() {
     const res = await officerService.submitResolutionEvidence(id, {
       status,
       note: fieldNote,
-      resolutionImage
+      resolutionImage,
+      officerName: user?.name || user?.username || 'Municipal Officer'
     });
     setSubmitting(false);
 

@@ -30,12 +30,6 @@ import History from './pages/officer/History';
 import ComplaintManagement from './pages/admin/ComplaintManagement';
 import Hotspots from './pages/admin/Hotspots';
 import Analytics from './pages/admin/Analytics';
-import Departments from './pages/admin/Departments';
-import Officers from './pages/admin/Officers';
-import SLAMonitor from './pages/admin/SLAMonitor';
-import Escalations from './pages/admin/Escalations';
-import Citizens from './pages/admin/Citizens';
-import AuditLogs from './pages/admin/AuditLogs';
 
 export default function App() {
   return (
@@ -60,6 +54,7 @@ export default function App() {
             <Route element={<CitizenLayout />}>
               <Route path="/citizen/dashboard" element={<CitizenDashboard />} />
               <Route path="/citizen/report" element={<ReportComplaint />} />
+              <Route path="/citizen/track" element={<TrackComplaint />} />
               <Route path="/citizen/complaints" element={<MyComplaints />} />
               <Route path="/citizen/complaints/:id" element={<CitizenComplaintDetail />} />
               <Route path="/citizen/explore" element={<ExploreComplaints />} />
@@ -77,18 +72,12 @@ export default function App() {
               <Route path="/officer/analytics" element={<Analytics />} />
               <Route path="/officer/map" element={<FieldMap />} />
               <Route path="/officer/history" element={<History />} />
-              <Route path="/officer/profile" element={<Profile />} />
-              <Route path="/officer/departments" element={<Departments />} />
-              <Route path="/officer/officers" element={<Officers />} />
-              <Route path="/officer/sla" element={<SLAMonitor />} />
-              <Route path="/officer/escalations" element={<Escalations />} />
-              <Route path="/officer/citizens" element={<Citizens />} />
-              <Route path="/officer/audit-logs" element={<AuditLogs />} />
             </Route>
 
             <Route path="/admin" element={<Navigate to="/officer/dashboard" replace />} />
             <Route path="/admin/login" element={<Navigate to="/officer/login" replace />} />
             <Route path="/admin/*" element={<Navigate to="/officer/dashboard" replace />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>
       </Router>

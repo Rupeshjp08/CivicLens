@@ -6,6 +6,7 @@ const links = [
   { to: '/citizen/dashboard', label: 'Overview', end: true },
   { to: '/citizen/report', label: 'Report Issue' },
   { to: '/citizen/complaints', label: 'My Complaints' },
+  { to: '/citizen/track', label: 'Track' },
   { to: '/citizen/explore', label: 'Explore' },
   { to: '/citizen/notifications', label: 'Notifications' },
   { to: '/citizen/profile', label: 'Profile' }

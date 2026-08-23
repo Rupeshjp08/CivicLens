@@ -8,7 +8,6 @@ import {
   Map,
   BarChart3,
   History,
-  User,
   LogOut,
   ChevronLeft,
   ChevronRight,
@@ -18,28 +17,29 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useDocumentTheme } from './useDocumentTheme';
+import RequireAuth from '../components/RequireAuth';
 
 const navItems = [
-  { label: 'Command Center', path: '/officer/dashboard', icon: LayoutDashboard, end: true },
+  { label: 'Dashboard', path: '/officer/dashboard', icon: LayoutDashboard, end: true },
   { label: 'Priority Queue', path: '/officer/queue', icon: Sliders },
-  { label: 'Complaints', path: '/officer/complaints', icon: List, end: true },
-  { label: 'Clusters', path: '/officer/clusters', icon: Layers },
+  { label: 'Assignments', path: '/officer/assignments', icon: List },
   { label: 'Map', path: '/officer/map', icon: Map },
+  { label: 'Clusters', path: '/officer/clusters', icon: Layers },
   { label: 'Analytics', path: '/officer/analytics', icon: BarChart3 },
-  { label: 'History', path: '/officer/history', icon: History },
-  { label: 'Profile', path: '/officer/profile', icon: User }
+  { label: 'History', path: '/officer/history', icon: History }
 ];
 
 export default function OfficerLayout() {
   useDocumentTheme('officer');
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { user, switchRole } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const closeMobile = () => setMobileOpen(false);
 
   return (
+    <RequireAuth role="OFFICER">
     <div className="officer-shell">
       <a href="#officer-main" className="skip-link">Skip to content</a>
 
@@ -164,7 +164,7 @@ export default function OfficerLayout() {
               type="button"
               className="sidebar-link"
               onClick={() => {
-                switchRole('CITIZEN');
+                logout();
                 closeMobile();
                 navigate('/');
               }}
@@ -192,5 +192,6 @@ export default function OfficerLayout() {
         </main>
       </div>
     </div>
+    </RequireAuth>
   );
 }

@@ -61,18 +61,15 @@ export default function TrackComplaint({ lookupId = '' }) {
     return 'upcoming';
   };
 
-  const mockFieldNotes = complaint?.fieldNotes || [
-    {
-      timestamp: '2026-08-22 10:14 AM',
-      author: 'Eng. Marcus Vance (Public Works)',
-      note: 'Initial triage complete. Work order dispatched to Field Crew.'
-    },
-    {
-      timestamp: '2026-08-22 11:30 AM',
-      author: 'Dispatch Operations',
-      note: 'Site inspection verified. Heavy equipment en route to landmark location.'
-    }
-  ];
+  const mockFieldNotes = (complaint?.fieldNotes && complaint.fieldNotes.length > 0)
+    ? complaint.fieldNotes
+    : [
+        {
+          timestamp: new Date(complaint?.createdAt || Date.now()).toLocaleDateString(),
+          author: 'CivicLens intake',
+          note: 'Complaint received and queued for municipal review.'
+        }
+      ];
 
   return (
     <div style={{ maxWidth: '840px', margin: '0 auto' }}>
@@ -195,7 +192,30 @@ export default function TrackComplaint({ lookupId = '' }) {
             <div style={{ background: 'var(--bg-canvas)', padding: '1.25rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)' }}>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.4rem' }}>Detailed Report Description</div>
               <p style={{ color: 'var(--text-primary)', fontSize: '0.92rem', lineHeight: 1.6 }}>{complaint.description}</p>
+              {complaint.image && (
+                <div style={{ marginTop: '1rem' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', marginBottom: '0.4rem' }}>Citizen Photo Evidence</div>
+                  <div style={{ borderRadius: 'var(--radius-sm)', overflow: 'hidden', border: '1px solid var(--border-color)', maxHeight: '240px', maxWidth: '400px' }}>
+                    <img src={complaint.image} alt="Report Evidence" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                </div>
+              )}
             </div>
+
+            {complaint.resolutionImage && (
+              <div style={{ background: 'rgba(16, 185, 129, 0.08)', padding: '1.25rem', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(16, 185, 129, 0.25)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                  <CheckCircle size={18} color="#10B981" />
+                  <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#10B981', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Field Resolution Evidence (After Repair)</span>
+                </div>
+                <div style={{ borderRadius: 'var(--radius-sm)', overflow: 'hidden', border: '1px solid var(--border-color)', maxHeight: '240px', maxWidth: '400px', marginBottom: '0.5rem' }}>
+                  <img src={complaint.resolutionImage} alt="Resolution Evidence" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </div>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                  Verified resolution proof uploaded by field officer upon completing work order.
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Official Field Notes Timeline */}
