@@ -1,21 +1,24 @@
+const Complaint = require('../models/Complaint');
+const { getIsConnected } = require('../config/db');
 const { calculatePriority, attachPriorityAnalysis } = require('../services/priorityService');
+const { createNotification } = require('../services/notificationService');
 
 let mockComplaints = [
   {
     _id: 'mock-3913',
     complaintId: 'CIV-3913',
-    title: 'test pothole complaint',
-    description: 'Testing frontend and backend integration',
+    title: 'Major pothole on Main Road',
+    description: 'Deep hazardous crater in left lane causing heavy traffic backup and tire damage.',
     category: 'Pothole',
-    location: 'Oak Avenue & 5th Street intersection, Sector 4',
+    location: 'Oak Avenue & 5th Street, Sector 4',
     image: 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?w=600&auto=format&fit=crop&q=80',
     status: 'Pending',
-    priority: 'Medium',
+    priority: 'Critical',
     supportCount: 28,
     createdAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000),
     updatedAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000),
-    assignedOfficerId: null,
-    assignedOfficerName: null,
+    assignedOfficerId: 'off-1',
+    assignedOfficerName: 'Eng. Marcus Vance',
     mapX: 62,
     mapY: 58,
     fieldNotes: [
@@ -121,25 +124,6 @@ let mockComplaints = [
     ]
   },
   {
-    _id: 'mock-1005',
-    complaintId: 'CIV-1005',
-    title: 'Second pothole near Oak Avenue junction',
-    description: 'Additional crater on the same stretch as earlier Oak Avenue reports.',
-    category: 'Pothole',
-    location: 'Oak Avenue junction, Sector 4',
-    image: '',
-    status: 'Pending',
-    priority: 'High',
-    supportCount: 9,
-    createdAt: new Date(Date.now() - 36 * 60 * 60 * 1000),
-    updatedAt: new Date(Date.now() - 36 * 60 * 60 * 1000),
-    assignedOfficerId: null,
-    assignedOfficerName: null,
-    mapX: 60,
-    mapY: 60,
-    fieldNotes: []
-  },
-  {
     _id: 'mock-1006',
     complaintId: 'CIV-1006',
     title: 'Streetlight blackout on pedestrian walkway',
@@ -176,12 +160,24 @@ const findIndex = (id) =>
 const getHealth = (req, res) => {
   res.status(200).json({
     success: true,
-    message: 'CivicLens API is running'
+    message: 'CivicLens API is running',
+    databaseConnected: getIsConnected()
   });
 };
 
-const getComplaints = (req, res, next) => {
+const getComplaints = async (req, res, next) => {
   try {
+    if (getIsConnected()) {
+      const dbComplaints = await Complaint.find({}).sort({ createdAt: -1 }).lean();
+      const analyzed = dbComplaints.map((c) => attachPriorityAnalysis(c, dbComplaints));
+      return res.status(200).json({
+        success: true,
+        count: analyzed.length,
+        data: analyzed,
+        source: 'database'
+      });
+    }
+
     const sortedComplaints = [...mockComplaints]
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       .map(withAnalysis);
@@ -189,35 +185,56 @@ const getComplaints = (req, res, next) => {
     res.status(200).json({
       success: true,
       count: sortedComplaints.length,
-      data: sortedComplaints
+      data: sortedComplaints,
+      source: 'memory'
     });
   } catch (error) {
     next(error);
   }
 };
 
-const getComplaintById = (req, res, next) => {
+const getComplaintById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const index = findIndex(id);
+    const rawId = String(id).trim();
 
+    if (getIsConnected()) {
+      const item = await Complaint.findOne({
+        $or: [
+          { complaintId: { $regex: new RegExp(`^${rawId}$`, 'i') } },
+          { _id: rawId.match(/^[0-9a-fA-F]{24}$/) ? rawId : null }
+        ]
+      }).lean();
+
+      if (item) {
+        const allDb = await Complaint.find({}).lean();
+        return res.status(200).json({
+          success: true,
+          data: attachPriorityAnalysis(item, allDb),
+          source: 'database'
+        });
+      }
+    }
+
+    const index = findIndex(rawId);
     if (index === -1) {
       return res.status(404).json({
         success: false,
-        message: 'Complaint not found'
+        message: `No complaint found for ${rawId}.`
       });
     }
 
     res.status(200).json({
       success: true,
-      data: withAnalysis(mockComplaints[index])
+      data: withAnalysis(mockComplaints[index]),
+      source: 'memory'
     });
   } catch (error) {
     next(error);
   }
 };
 
-const createComplaint = (req, res, next) => {
+const createComplaint = async (req, res, next) => {
   try {
     const { title, description, category, location, image } = req.body;
 
@@ -229,8 +246,48 @@ const createComplaint = (req, res, next) => {
     }
 
     const complaintId = `CIV-${Math.floor(1000 + Math.random() * 9000)}`;
-    const tempObj = { title, description, category, location, supportCount: 0, createdAt: new Date() };
+    const tempObj = { title, description, category, location, supportCount: 1, createdAt: new Date() };
     const priority = calculatePriority(tempObj, mockComplaints);
+
+    if (getIsConnected()) {
+      const newDoc = await Complaint.create({
+        complaintId,
+        title,
+        description,
+        category: category || 'Other',
+        location,
+        image: image || '',
+        status: 'Pending',
+        priority,
+        supportCount: 1,
+        mapX: 40 + Math.round(Math.random() * 40),
+        mapY: 30 + Math.round(Math.random() * 40),
+        fieldNotes: [
+          {
+            timestamp: new Date().toISOString(),
+            author: 'CivicLens intake',
+            note: 'Complaint received and queued for municipal review.'
+          }
+        ]
+      });
+
+      await createNotification({
+        recipientId: 'cit-1',
+        recipientRole: 'CITIZEN',
+        type: 'COMPLAINT_SUBMITTED',
+        title: 'Complaint Submitted Successfully',
+        message: `Your complaint ${complaintId} (${title}) has been submitted and queued for municipal review.`,
+        complaintId
+      });
+
+      const allDb = await Complaint.find({}).lean();
+      return res.status(201).json({
+        success: true,
+        message: 'Complaint submitted successfully',
+        data: attachPriorityAnalysis(newDoc.toObject(), allDb),
+        source: 'database'
+      });
+    }
 
     const newComplaint = {
       _id: `mock-${Date.now()}`,
@@ -260,22 +317,106 @@ const createComplaint = (req, res, next) => {
 
     mockComplaints.unshift(newComplaint);
 
+    await createNotification({
+      recipientId: 'cit-1',
+      recipientRole: 'CITIZEN',
+      type: 'COMPLAINT_SUBMITTED',
+      title: 'Complaint Submitted Successfully',
+      message: `Your complaint ${complaintId} (${title}) has been submitted and queued for municipal review.`,
+      complaintId
+    });
+
     res.status(201).json({
       success: true,
       message: 'Complaint submitted successfully',
-      data: withAnalysis(newComplaint)
+      data: withAnalysis(newComplaint),
+      source: 'memory'
     });
   } catch (error) {
     next(error);
   }
 };
 
-const updateComplaint = (req, res, next) => {
+const updateComplaint = async (req, res, next) => {
   try {
     const { id } = req.params;
+    const rawId = String(id).trim();
     const { status, priority, note, author, assignedOfficerId, assignedOfficerName, resolutionImage } = req.body;
-    const index = findIndex(id);
 
+    // Trigger Notification helpers
+    if (status === 'Resolved') {
+      await createNotification({
+        recipientId: 'cit-1',
+        recipientRole: 'CITIZEN',
+        type: 'COMPLAINT_RESOLVED',
+        title: 'Complaint Verified Resolved',
+        message: `Your report ${rawId} has been resolved by field crew with verified photo evidence.`,
+        complaintId: rawId
+      });
+    } else if (status) {
+      await createNotification({
+        recipientId: 'cit-1',
+        recipientRole: 'CITIZEN',
+        type: 'STATUS_CHANGED',
+        title: `Status Updated: ${status}`,
+        message: `The status for report ${rawId} has been updated to ${status}.`,
+        complaintId: rawId
+      });
+    }
+
+    if (assignedOfficerId) {
+      await createNotification({
+        recipientId: assignedOfficerId || 'off-1',
+        recipientRole: 'OFFICER',
+        type: 'COMPLAINT_ASSIGNED',
+        title: 'New Dispatch Assigned',
+        message: `You have been assigned to complaint ${rawId}.`,
+        complaintId: rawId
+      });
+    }
+
+    if (getIsConnected()) {
+      const updatePayload = {};
+      if (status) updatePayload.status = status;
+      if (priority) updatePayload.priority = priority;
+      if (assignedOfficerId) updatePayload.assignedOfficerId = assignedOfficerId;
+      if (assignedOfficerName) updatePayload.assignedOfficerName = assignedOfficerName;
+      if (resolutionImage) updatePayload.resolutionImage = resolutionImage;
+
+      const $push = {};
+      if (note) {
+        $push.fieldNotes = {
+          timestamp: new Date().toISOString(),
+          author: author || 'Eng. Marcus Vance',
+          note
+        };
+      }
+
+      const updateQuery = { $set: updatePayload };
+      if (Object.keys($push).length > 0) updateQuery.$push = $push;
+
+      const updatedDoc = await Complaint.findOneAndUpdate(
+        {
+          $or: [
+            { complaintId: { $regex: new RegExp(`^${rawId}$`, 'i') } },
+            { _id: rawId.match(/^[0-9a-fA-F]{24}$/) ? rawId : null }
+          ]
+        },
+        updateQuery,
+        { new: true }
+      ).lean();
+
+      if (updatedDoc) {
+        const allDb = await Complaint.find({}).lean();
+        return res.status(200).json({
+          success: true,
+          data: attachPriorityAnalysis(updatedDoc, allDb),
+          source: 'database'
+        });
+      }
+    }
+
+    const index = findIndex(rawId);
     if (index === -1) {
       return res.status(404).json({
         success: false,
@@ -293,7 +434,7 @@ const updateComplaint = (req, res, next) => {
       mockComplaints[index].fieldNotes = mockComplaints[index].fieldNotes || [];
       mockComplaints[index].fieldNotes.push({
         timestamp: new Date().toISOString(),
-        author: author || 'Municipal officer',
+        author: author || 'Eng. Marcus Vance',
         note
       });
     }
@@ -302,18 +443,42 @@ const updateComplaint = (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      data: withAnalysis(mockComplaints[index])
+      data: withAnalysis(mockComplaints[index]),
+      source: 'memory'
     });
   } catch (error) {
     next(error);
   }
 };
 
-const upvoteComplaint = (req, res, next) => {
+const upvoteComplaint = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const index = findIndex(id);
+    const rawId = String(id).trim();
 
+    if (getIsConnected()) {
+      const updatedDoc = await Complaint.findOneAndUpdate(
+        {
+          $or: [
+            { complaintId: { $regex: new RegExp(`^${rawId}$`, 'i') } },
+            { _id: rawId.match(/^[0-9a-fA-F]{24}$/) ? rawId : null }
+          ]
+        },
+        { $inc: { supportCount: 1 } },
+        { new: true }
+      ).lean();
+
+      if (updatedDoc) {
+        const allDb = await Complaint.find({}).lean();
+        return res.status(200).json({
+          success: true,
+          data: attachPriorityAnalysis(updatedDoc, allDb),
+          source: 'database'
+        });
+      }
+    }
+
+    const index = findIndex(rawId);
     if (index === -1) {
       return res.status(404).json({
         success: false,
@@ -326,7 +491,8 @@ const upvoteComplaint = (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      data: withAnalysis(mockComplaints[index])
+      data: withAnalysis(mockComplaints[index]),
+      source: 'memory'
     });
   } catch (error) {
     next(error);
@@ -341,3 +507,4 @@ module.exports = {
   updateComplaint,
   upvoteComplaint
 };
+
