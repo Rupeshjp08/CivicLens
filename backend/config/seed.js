@@ -5,9 +5,10 @@ const AuditLog = require('../models/AuditLog');
 
 const seedData = async () => {
   try {
-    const count = await Complaint.countDocuments();
-    if (count > 0) {
-      console.log(`ℹ️ MongoDB already populated with ${count} complaints. Skipping seed.`);
+    const complaintCount = await Complaint.countDocuments();
+    const userCount = await User.countDocuments();
+    if (complaintCount > 0 || userCount > 0) {
+      console.log(`ℹ️ MongoDB Atlas already populated (${complaintCount} complaints, ${userCount} users). Skipping seed.`);
       return;
     }
 

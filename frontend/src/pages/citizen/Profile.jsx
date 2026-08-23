@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { User, Mail, Phone, MapPin, ShieldCheck, Check } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { User, Mail, Phone, MapPin, ShieldCheck, Check, LogOut } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 export default function Profile() {
-  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [saved, setSaved] = useState(false);
   const [formData, setFormData] = useState({
     name: user?.name || 'John Citizen',
@@ -85,6 +87,38 @@ export default function Profile() {
           <span>Save Profile Preferences</span>
         </button>
       </form>
+
+      {/* Session / Logout Section */}
+      <div className="panel" style={{ padding: '1.5rem', marginTop: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', border: '1px solid #E2E8F0', borderRadius: '16px' }}>
+        <div>
+          <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0F172A' }}>Sign Out of Session</div>
+          <div style={{ fontSize: '0.82rem', color: '#64748B', marginTop: '0.2rem' }}>End your current authenticated session and return to the home page.</div>
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            logout();
+            navigate('/');
+          }}
+          className="btn"
+          style={{
+            padding: '0.5rem 1rem',
+            fontSize: '0.82rem',
+            background: '#EF4444',
+            color: '#FFFFFF',
+            border: 'none',
+            borderRadius: '9999px',
+            fontWeight: 700,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.35rem'
+          }}
+        >
+          <LogOut size={14} />
+          <span>Sign Out</span>
+        </button>
+      </div>
     </div>
   );
 }
+

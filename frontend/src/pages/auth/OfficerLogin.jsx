@@ -34,9 +34,12 @@ export default function OfficerLogin() {
     setLoading(true);
     const res = await authService.login('OFFICER', { email, password });
     setLoading(false);
-    if (res.success) {
-      login('OFFICER', res.user);
-      navigate('/officer/dashboard');
+    if (res && res.success && res.user) {
+      login(res.user.role, res.user);
+      const targetRoute = (res.user.role === 'OFFICER' || res.user.role === 'ADMIN')
+        ? '/officer/dashboard'
+        : '/citizen/dashboard';
+      navigate(targetRoute, { replace: true });
     }
   };
 

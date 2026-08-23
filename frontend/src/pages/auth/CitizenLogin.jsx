@@ -17,9 +17,12 @@ export default function CitizenLogin() {
     setLoading(true);
     const res = await authService.login('CITIZEN', { email, password });
     setLoading(false);
-    if (res.success) {
-      login('CITIZEN', res.user);
-      navigate('/citizen/dashboard');
+    if (res && res.success && res.user) {
+      login(res.user.role, res.user);
+      const targetRoute = (res.user.role === 'OFFICER' || res.user.role === 'ADMIN')
+        ? '/officer/dashboard'
+        : '/citizen/dashboard';
+      navigate(targetRoute, { replace: true });
     }
   };
 

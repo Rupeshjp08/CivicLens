@@ -1,8 +1,17 @@
 import { mockOfficers } from '../data/mockData';
 import { complaintService } from './complaintService';
+import { api } from './api';
 
 export const officerService = {
   async getOfficers() {
+    try {
+      const res = await api.getOfficers();
+      if (res && res.success && Array.isArray(res.data) && res.data.length > 0) {
+        return res;
+      }
+    } catch (err) {
+      console.warn('API Error fetching officers:', err);
+    }
     return { success: true, data: mockOfficers };
   },
 
@@ -22,7 +31,8 @@ export const officerService = {
       status: status || 'In Progress',
       resolutionImage: resolutionImage || undefined,
       note: note || undefined,
-      author: officerName || 'Municipal officer'
+      author: officerName || 'Eng. Marcus Vance'
     });
   }
 };
+

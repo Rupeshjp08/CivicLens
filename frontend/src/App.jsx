@@ -32,12 +32,15 @@ import ComplaintManagement from './pages/admin/ComplaintManagement';
 import Hotspots from './pages/admin/Hotspots';
 import Analytics from './pages/admin/Analytics';
 
+import ErrorBoundary from './components/ErrorBoundary';
+
 export default function App() {
   return (
     <AuthProvider>
       <Router>
         <div className="app-container">
-          <Routes>
+          <ErrorBoundary>
+            <Routes>
             <Route element={<PublicLayout />}>
               <Route path="/" element={<Home />} />
               <Route path="/how-it-works" element={<HowItWorks />} />
@@ -81,6 +84,7 @@ export default function App() {
             <Route path="/admin/*" element={<Navigate to="/officer/dashboard" replace />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          </ErrorBoundary>
         </div>
       </Router>
     </AuthProvider>

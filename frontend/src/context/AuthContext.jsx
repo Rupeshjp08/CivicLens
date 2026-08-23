@@ -10,24 +10,30 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     try {
-      const saved = sessionStorage.getItem(SESSION_KEY);
+      const saved = sessionStorage.getItem(SESSION_KEY) || localStorage.getItem(SESSION_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed?.role === 'CITIZEN' || parsed?.role === 'OFFICER') {
+        if (parsed?.role === 'CITIZEN' || parsed?.role === 'OFFICER' || parsed?.role === 'ADMIN') {
           setUser(parsed);
           if (parsed.role === 'CITIZEN') seedDemoReports();
         }
       }
     } catch {
       sessionStorage.removeItem(SESSION_KEY);
+      localStorage.removeItem(SESSION_KEY);
     }
     setReady(true);
   }, []);
 
   const persist = (nextUser) => {
     setUser(nextUser);
-    if (nextUser) sessionStorage.setItem(SESSION_KEY, JSON.stringify(nextUser));
-    else sessionStorage.removeItem(SESSION_KEY);
+    if (nextUser) {
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify(nextUser));
+      localStorage.setItem(SESSION_KEY, JSON.stringify(nextUser));
+    } else {
+      sessionStorage.removeItem(SESSION_KEY);
+      localStorage.removeItem(SESSION_KEY);
+    }
   };
 
   const login = (role, userData) => {
@@ -38,7 +44,9 @@ export function AuthProvider({ children }) {
   };
 
   const logout = () => {
-    persist(null);
+    sessionStorage.removeItem(SESSION_KEY);
+    localStorage.removeItem(SESSION_KEY);
+    setUser(null);
   };
 
   return (

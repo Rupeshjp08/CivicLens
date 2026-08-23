@@ -1,6 +1,8 @@
+const dotenv = require('dotenv');
+dotenv.config();
+
 const express = require('express');
 const cors = require('cors');
-const dotenv = require('dotenv');
 
 const { connectDB, getIsConnected } = require('./config/db');
 const seedData = require('./config/seed');
@@ -12,9 +14,6 @@ const departmentRoutes = require('./routes/departmentRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const errorHandler = require('./middleware/errorHandler');
-
-// Load environment variables
-dotenv.config();
 
 // Initialize Express App
 const app = express();

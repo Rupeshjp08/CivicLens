@@ -15,12 +15,11 @@ export default function RequireAuth({ role, children }) {
   }
 
   if (!user) {
-    const to = role === 'OFFICER' ? '/officer/login' : '/login';
-    return <Navigate to={to} replace state={{ from: location.pathname }} />;
+    return <Navigate to="/" replace state={{ from: location.pathname }} />;
   }
 
   if (role && user.role !== role) {
-    const to = user.role === 'OFFICER' ? '/officer/dashboard' : '/citizen/dashboard';
+    const to = (user.role === 'OFFICER' || user.role === 'ADMIN') ? '/officer/dashboard' : '/citizen/dashboard';
     return <Navigate to={to} replace />;
   }
 

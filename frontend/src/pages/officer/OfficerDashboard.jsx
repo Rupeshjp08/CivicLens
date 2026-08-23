@@ -17,6 +17,7 @@ import {
   Building2
 } from 'lucide-react';
 import { officerService } from '../../services/officerService';
+import NotificationDropdown from '../../components/NotificationDropdown';
 import StatusBadge from '../../components/StatusBadge';
 import PriorityScore from '../../components/PriorityScore';
 import KpiCard from '../../components/KpiCard';
@@ -126,39 +127,7 @@ export default function OfficerDashboard() {
             <span>Refresh Live Data</span>
           </button>
 
-          {/* Notification Button */}
-          <button
-            type="button"
-            className="btn"
-            aria-label="Notifications"
-            style={{
-              width: 36,
-              height: 36,
-              borderRadius: '50%',
-              background: '#FFFFFF',
-              border: '1px solid #E2E8F0',
-              color: '#64748B',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 1px 3px rgba(15, 23, 42, 0.04)',
-              position: 'relative'
-            }}
-          >
-            <Bell size={16} />
-            <span
-              style={{
-                position: 'absolute',
-                top: 4,
-                right: 4,
-                width: 8,
-                height: 8,
-                borderRadius: '50%',
-                background: '#EF4444',
-                border: '1.5px solid #FFFFFF'
-              }}
-            />
-          </button>
+          <NotificationDropdown />
         </div>
       </div>
 

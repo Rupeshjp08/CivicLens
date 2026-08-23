@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { NavLink, Link, Outlet, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   Sliders,
@@ -54,7 +54,7 @@ export default function OfficerLayout() {
           >
             {mobileOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
-          <span className="header-brand" style={{ fontSize: '1.25rem', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: '0.45rem' }}>
+          <Link to="/" className="header-brand" style={{ fontSize: '1.25rem', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: '0.45rem', textDecoration: 'none' }}>
             <span
               style={{
                 width: 32,
@@ -75,7 +75,7 @@ export default function OfficerLayout() {
               <span style={{ color: '#0F172A', fontWeight: 800 }}>Civic</span>
               <span style={{ color: '#16A34A', fontWeight: 800 }}>Lens</span>
             </span>
-          </span>
+          </Link>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
@@ -240,7 +240,7 @@ export default function OfficerLayout() {
               }}
             >
               <LogOut size={15} aria-hidden="true" />
-              {(!collapsed || mobileOpen) && <span>Exit to public site</span>}
+              {(!collapsed || mobileOpen) && <span>Log Out & Exit</span>}
             </button>
           </div>
         </aside>

@@ -1,9 +1,16 @@
 import { mockCitizens, mockOfficers } from '../data/mockData';
+import { api } from './api';
 
 export const authService = {
   async login(role, credentials) {
-    // Simulates API delay
-    await new Promise(r => setTimeout(r, 400));
+    try {
+      const res = await api.login({ role, email: credentials.email, password: credentials.password });
+      if (res && res.success && res.user) {
+        return res;
+      }
+    } catch (err) {
+      console.warn('API Login error, falling back:', err);
+    }
 
     if (role === 'OFFICER') {
       const officer = mockOfficers[0];
@@ -19,7 +26,6 @@ export const authService = {
       };
     }
 
-    // Default Citizen
     const citizen = mockCitizens[0];
     return {
       success: true,
@@ -33,7 +39,15 @@ export const authService = {
   },
 
   async register(citizenData) {
-    await new Promise(r => setTimeout(r, 500));
+    try {
+      const res = await api.register(citizenData);
+      if (res && res.success) {
+        return res;
+      }
+    } catch (err) {
+      console.warn('API Register error, falling back:', err);
+    }
+
     return {
       success: true,
       user: {
@@ -54,3 +68,4 @@ export const authService = {
     };
   }
 };
+
