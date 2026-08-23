@@ -4,6 +4,19 @@
 
 ---
 
+## 🌐 Live Application & Deployment
+
+🚀 **Live Demo**: [https://civic-lens-drab.vercel.app](https://civic-lens-drab.vercel.app)
+
+| Layer | Deployment Infrastructure | URL |
+| :--- | :--- | :--- |
+| **Frontend** | **Vercel** (Vite + React) | [https://civic-lens-drab.vercel.app](https://civic-lens-drab.vercel.app) |
+| **Backend** | **Render** (Node.js + Express) | [https://civiclens-siu8.onrender.com](https://civiclens-siu8.onrender.com) |
+| **Database** | **MongoDB Atlas** (Cloud Mongoose Cluster) | Connected via `MONGODB_URI` |
+| **API Health** | **Production Health Endpoint** | [https://civiclens-siu8.onrender.com/api/health](https://civiclens-siu8.onrender.com/api/health) |
+
+---
+
 ## 📁 Repository Structure
 
 ```text

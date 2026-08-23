@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { User, Mail, Phone, MapPin, ShieldCheck, Check } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { User, Mail, Phone, MapPin, ShieldCheck, Check, LogOut } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 export default function Profile() {
-  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [saved, setSaved] = useState(false);
   const [formData, setFormData] = useState({
     name: user?.name || 'John Citizen',
@@ -36,8 +38,9 @@ export default function Profile() {
 
       <form onSubmit={handleSubmit} className="panel" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.35rem' }}>
         <div className="form-group" style={{ marginBottom: 0 }}>
-          <label>Full Legal Name</label>
+          <label htmlFor="profile-name">Full name</label>
           <input
+            id="profile-name"
             type="text"
             className="form-control"
             value={formData.name}
@@ -47,8 +50,9 @@ export default function Profile() {
         </div>
 
         <div className="form-group" style={{ marginBottom: 0 }}>
-          <label>Email Address</label>
+          <label htmlFor="profile-email">Email address</label>
           <input
+            id="profile-email"
             type="email"
             className="form-control"
             value={formData.email}
@@ -58,8 +62,9 @@ export default function Profile() {
         </div>
 
         <div className="form-group" style={{ marginBottom: 0 }}>
-          <label>Phone Number</label>
+          <label htmlFor="profile-phone">Phone number</label>
           <input
+            id="profile-phone"
             type="text"
             className="form-control font-mono"
             value={formData.phone}
@@ -68,8 +73,9 @@ export default function Profile() {
         </div>
 
         <div className="form-group" style={{ marginBottom: 0 }}>
-          <label>Primary Resident Sector / Neighborhood</label>
+          <label htmlFor="profile-address">Neighborhood or sector</label>
           <input
+            id="profile-address"
             type="text"
             className="form-control"
             value={formData.address}
@@ -81,6 +87,38 @@ export default function Profile() {
           <span>Save Profile Preferences</span>
         </button>
       </form>
+
+      {/* Session / Logout Section */}
+      <div className="panel" style={{ padding: '1.5rem', marginTop: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', border: '1px solid #E2E8F0', borderRadius: '16px' }}>
+        <div>
+          <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0F172A' }}>Sign Out of Session</div>
+          <div style={{ fontSize: '0.82rem', color: '#64748B', marginTop: '0.2rem' }}>End your current authenticated session and return to the home page.</div>
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            logout();
+            navigate('/');
+          }}
+          className="btn"
+          style={{
+            padding: '0.5rem 1rem',
+            fontSize: '0.82rem',
+            background: '#EF4444',
+            color: '#FFFFFF',
+            border: 'none',
+            borderRadius: '9999px',
+            fontWeight: 700,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.35rem'
+          }}
+        >
+          <LogOut size={14} />
+          <span>Sign Out</span>
+        </button>
+      </div>
     </div>
   );
 }
+

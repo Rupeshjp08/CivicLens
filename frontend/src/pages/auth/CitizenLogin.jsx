@@ -17,9 +17,12 @@ export default function CitizenLogin() {
     setLoading(true);
     const res = await authService.login('CITIZEN', { email, password });
     setLoading(false);
-    if (res.success) {
-      login('CITIZEN', res.user);
-      navigate('/');
+    if (res && res.success && res.user) {
+      login(res.user.role, res.user);
+      const targetRoute = (res.user.role === 'OFFICER' || res.user.role === 'ADMIN')
+        ? '/officer/dashboard'
+        : '/citizen/dashboard';
+      navigate(targetRoute, { replace: true });
     }
   };
 
@@ -90,7 +93,10 @@ export default function CitizenLogin() {
         </form>
 
         <div style={{ textAlign: 'center', marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid var(--border-color)', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-          Need an account? <Link to="/login" style={{ color: 'var(--brand-blue)', fontWeight: 600 }}>Choose Portal</Link>
+          Need an account? <Link to="/register" style={{ color: 'var(--brand-blue)', fontWeight: 600 }}>Register</Link>
+          <div style={{ marginTop: '0.75rem' }}>
+            Municipal staff? <Link to="/officer/login" style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>Officer sign in</Link>
+          </div>
         </div>
       </div>
     </div>

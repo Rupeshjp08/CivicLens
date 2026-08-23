@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { ThumbsUp, MapPin, Filter, Search, Tag, AlertCircle, CheckCircle2 } from 'lucide-react';
-import { api } from '../services/api';
+import { ThumbsUp, MapPin, Filter, Search, Tag } from 'lucide-react';
+import { complaintService } from '../services/complaintService';
+import StatusBadge from '../components/StatusBadge';
+import PriorityScore from '../components/PriorityScore';
+import IssueCluster from '../components/IssueCluster';
+import EmptyState from '../components/EmptyState';
 
 export default function ExploreComplaints() {
   const [complaints, setComplaints] = useState([]);
@@ -21,7 +25,7 @@ export default function ExploreComplaints() {
 
   const loadComplaints = async () => {
     setLoading(true);
-    const res = await api.getComplaints();
+    const res = await complaintService.getComplaints();
     setLoading(false);
     if (res.success && res.data) {
       setComplaints(res.data);
@@ -31,7 +35,6 @@ export default function ExploreComplaints() {
   const handleUpvote = async (id) => {
     const isAlreadyUpvoted = upvotedItems[id];
     
-    // Instant optimistic increment
     setComplaints(prev =>
       prev.map(item => {
         const match = item.complaintId === id || item._id === id;
@@ -48,8 +51,7 @@ export default function ExploreComplaints() {
 
     setUpvotedItems(prev => ({ ...prev, [id]: !isAlreadyUpvoted }));
 
-    // Send API call in background
-    api.upvoteComplaint(id);
+    complaintService.upvoteComplaint(id);
   };
 
   const categories = ['All', 'Pothole', 'Broken Streetlight', 'Garbage Accumulation', 'Water Leakage', 'Damaged Road', 'Other'];
@@ -66,16 +68,18 @@ export default function ExploreComplaints() {
     return matchesCat && matchesStat && matchesArea && matchesSearch;
   });
 
-  const getStatusBadge = (status) => {
-    switch (status) {
-      case 'Pending': return 'badge-pending';
-      case 'In Review': return 'badge-review';
-      case 'In Progress': return 'badge-progress';
-      case 'Resolved': return 'badge-resolved';
-      case 'Rejected': return 'badge-rejected';
-      default: return 'badge-pending';
+  // Group complaints into clusters by category if multiple exist
+  const clusteredCategoryMap = {};
+  filteredComplaints.forEach(item => {
+    if (!clusteredCategoryMap[item.category]) {
+      clusteredCategoryMap[item.category] = [];
     }
-  };
+    clusteredCategoryMap[item.category].push(item);
+  });
+  
+  const largeClusters = Object.entries(clusteredCategoryMap)
+    .filter(([cat, items]) => items.length >= 2)
+    .slice(0, 2); // Show top 2 clusters
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
@@ -86,11 +90,11 @@ export default function ExploreComplaints() {
         </div>
         <h1 style={{ fontSize: '2.1rem', fontWeight: 800 }}>Explore Public Issues & Community Support</h1>
         <p style={{ color: 'var(--text-secondary)' }}>
-          Review community reported concerns. Upvote issues in your sector to raise triage dispatch priority.
+          Review community reported concerns. Upvote issues in your sector to raise triage dispatch priority score.
         </p>
       </div>
 
-      {/* Filter Bar & Chips Panel */}
+      {/* Filter Bar */}
       <div className="panel" style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flex: 1, minWidth: '240px' }}>
@@ -146,25 +150,39 @@ export default function ExploreComplaints() {
         </div>
       </div>
 
+      {/* Clustered Issues Banner if any */}
+      {!loading && largeClusters.length > 0 && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div style={{ fontSize: 'var(--text-sm)', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            Detected Clustered Municipal Hazards
+          </div>
+          {largeClusters.map(([cat, items]) => (
+            <IssueCluster 
+              key={cat} 
+              complaints={items} 
+              clusterLabel={`${cat} — Multiple Related Reports`} 
+            />
+          ))}
+        </div>
+      )}
+
       {/* Complaint Cards Grid */}
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-secondary)' }}>
-          Fetching live incident feed...
-        </div>
+        <EmptyState type="loading" title="Fetching live incident feed..." message="Querying municipal database." />
       ) : filteredComplaints.length === 0 ? (
-        <div className="panel" style={{ textAlign: 'center', padding: '4rem' }}>
-          <AlertCircle size={42} color="var(--text-muted)" style={{ marginBottom: '0.75rem' }} />
-          <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>No issues found matching filters</h3>
-          <p style={{ color: 'var(--text-secondary)', marginTop: '0.25rem' }}>Adjust search query, area sector, or category dropdowns.</p>
-        </div>
+        <EmptyState 
+          type="empty" 
+          title="No issues found matching filters" 
+          message="Adjust search query, area sector, or category dropdowns." 
+        />
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '1.35rem' }}>
+        <div className="issue-card-grid">
           {filteredComplaints.map((item) => {
             const itemId = item.complaintId || item._id;
             const isUpvoted = upvotedItems[itemId];
 
             return (
-              <div key={itemId} className="panel" style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem', padding: '1.5rem' }}>
+              <div key={itemId} className="panel panel-interactive" style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem', padding: '1.5rem' }}>
                 {item.image && (
                   <div style={{ height: '170px', borderRadius: 'var(--radius-sm)', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
                     <img src={item.image} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -174,7 +192,7 @@ export default function ExploreComplaints() {
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
                     <span className="badge badge-medium font-mono">#{item.complaintId}</span>
-                    <span className={`badge ${getStatusBadge(item.status)}`}>{item.status}</span>
+                    <StatusBadge type="status" value={item.status} />
                   </div>
 
                   <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.35rem' }}>{item.title}</h3>
@@ -193,7 +211,10 @@ export default function ExploreComplaints() {
                 </div>
 
                 <div style={{ marginTop: 'auto', paddingTop: '0.85rem', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span className={`badge badge-${item.priority?.toLowerCase() || 'medium'}`}>{item.priority} Priority</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <StatusBadge type="priority" value={item.priority} size="sm" />
+                    <PriorityScore complaint={item} size="sm" showBreakdown={false} />
+                  </div>
                   
                   <button
                     type="button"

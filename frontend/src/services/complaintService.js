@@ -1,97 +1,144 @@
 import { mockComplaints } from '../data/mockData';
 import { api } from './api';
+import { rememberReportId } from '../utils/myReports';
 
 let localComplaints = [...mockComplaints];
+let lastBackendOk = true;
+
+const isObjectIdLike = (id) => /^[a-f0-9]{24}$/i.test(String(id || '').trim());
 
 export const complaintService = {
-  async getComplaints(filters = {}) {
+  lastBackendOk() {
+    return lastBackendOk;
+  },
+
+  async getComplaints() {
     try {
-      // Try backend first
       const res = await api.getComplaints();
-      if (res && res.success && Array.isArray(res.data) && res.data.length > 0) {
-        return { success: true, data: res.data };
+      if (res && res.success && Array.isArray(res.data)) {
+        lastBackendOk = true;
+        localComplaints = res.data;
+        return { success: true, data: res.data, source: 'api' };
       }
+      lastBackendOk = false;
     } catch (err) {
-      console.warn('Backend endpoint unavailable, returning mock complaints data:', err);
+      lastBackendOk = false;
+      console.warn('Backend endpoint unavailable, returning local complaints data:', err);
     }
-    return { success: true, data: localComplaints };
+    return { success: true, data: localComplaints, source: 'demo', offline: true };
   },
 
   async getComplaintById(id) {
-    try {
-      const res = await api.getComplaintById(id);
-      if (res && res.success && res.data) {
-        return { success: true, data: res.data };
-      }
-    } catch (err) {
-      console.warn(`Backend error fetching complaint ${id}, using fallback data:`, err);
+    if (!id || !String(id).trim()) {
+      return { success: false, message: 'Enter a complaint reference ID.' };
     }
 
-    const found = localComplaints.find(c => c.complaintId === id || c._id === id);
-    if (found) {
-      return { success: true, data: found };
+    const raw = String(id).trim();
+    const queryId = raw.toLowerCase();
+
+    try {
+      const res = await api.getComplaintById(encodeURIComponent(raw));
+      if (res && res.success && res.data) {
+        lastBackendOk = true;
+        return { success: true, data: res.data, source: 'api' };
+      }
+      if (res && res.success === false && res.message) {
+        lastBackendOk = true;
+        const local = localComplaints.find(
+          (c) =>
+            c.complaintId?.toLowerCase() === queryId ||
+            c._id?.toLowerCase() === queryId
+        );
+        if (local) return { success: true, data: local, source: 'local' };
+        return { success: false, message: res.message };
+      }
+    } catch (err) {
+      lastBackendOk = false;
+      console.warn(`Backend error fetching complaint ${raw}:`, err);
     }
-    return { success: false, message: `Complaint ID #${id} not found.` };
+
+    const found = localComplaints.find(
+      (c) =>
+        c.complaintId?.toLowerCase() === queryId ||
+        c._id?.toLowerCase() === queryId
+    );
+
+    if (found) {
+      return { success: true, data: found, source: 'demo', offline: !lastBackendOk };
+    }
+
+    if (isObjectIdLike(raw)) {
+      return {
+        success: false,
+        message: 'That looks like an internal record id. Use a public reference such as CIV-3913.'
+      };
+    }
+
+    return {
+      success: false,
+      message: lastBackendOk
+        ? `No complaint found for ${raw}.`
+        : 'Unable to reach the CivicLens API. Please check your network connection.'
+    };
   },
 
   async createComplaint(data) {
     try {
-      const res = await api.createComplaint(data);
-      if (res && res.success) {
+      const payload = {
+        title: data.title,
+        description: data.description,
+        category: data.category,
+        location: data.location,
+        image: data.image || ''
+      };
+      const res = await api.createComplaint(payload);
+      if (res && res.success && res.data) {
+        lastBackendOk = true;
+        rememberReportId(res.data.complaintId);
+        localComplaints.unshift(res.data);
+        return { ...res, source: 'api' };
+      }
+      if (res && res.success === false) {
+        lastBackendOk = true;
         return res;
       }
     } catch (err) {
-      console.warn('Backend API error creating complaint, creating client fallback ticket:', err);
+      lastBackendOk = false;
+      console.warn('Backend API error creating complaint:', err);
     }
 
-    const newId = `CL-2026-00${Math.floor(100 + Math.random() * 900)}`;
-    const newComplaint = {
-      _id: `c_${Date.now()}`,
-      complaintId: newId,
-      title: data.title || 'Civic Infrastructure Concern',
-      category: data.category || 'Pothole',
-      location: data.location || 'Sector 4, Main Street',
-      description: data.description || 'Reported via Citizen Portal.',
-      priority: data.category === 'Water Leakage' || data.category === 'Damaged Road' ? 'Critical' : 'High',
-      status: 'Pending',
-      supportCount: 1,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      department: data.category === 'Water Leakage' ? 'Water & Utilities' : 'Roads & Infrastructure',
-      assignedOfficerId: null,
-      assignedOfficerName: 'Unassigned',
-      image: data.image || null,
-      resolutionImage: null,
-      fieldNotes: [
-        { timestamp: new Date().toLocaleString(), author: 'System Triage', note: 'Ticket ingested into Municipal Queue.' }
-      ]
-    };
-
-    localComplaints.unshift(newComplaint);
     return {
-      success: true,
-      message: 'Complaint submitted successfully',
-      data: { complaintId: newId }
+      success: false,
+      message: 'Unable to submit this complaint to the CivicLens API. Please check your connection and try again.'
     };
   },
 
   async updateComplaint(id, updateData) {
     try {
-      const res = await api.updateComplaint(id, updateData);
+      const res = await api.updateComplaint(encodeURIComponent(id), updateData);
       if (res && res.success) {
+        lastBackendOk = true;
+        localComplaints = localComplaints.map((c) =>
+          c.complaintId === id || c._id === id ? { ...c, ...res.data } : c
+        );
         return res;
       }
     } catch (err) {
-      console.warn(`Backend error updating complaint ${id}, updating local state:`, err);
+      console.warn(`Backend error updating complaint ${id}:`, err);
     }
 
-    localComplaints = localComplaints.map(c => {
-      if (c.complaintId === id || c._id === id) {
+    const queryId = id?.toLowerCase();
+    localComplaints = localComplaints.map((c) => {
+      if (c.complaintId?.toLowerCase() === queryId || c._id?.toLowerCase() === queryId) {
         const updated = { ...c, ...updateData, updatedAt: new Date().toISOString() };
         if (updateData.note) {
           updated.fieldNotes = [
             ...(updated.fieldNotes || []),
-            { timestamp: new Date().toLocaleString(), author: updateData.author || 'Officer / Admin', note: updateData.note }
+            {
+              timestamp: new Date().toISOString(),
+              author: updateData.author || 'Municipal officer',
+              note: updateData.note
+            }
           ];
         }
         return updated;
@@ -99,80 +146,36 @@ export const complaintService = {
       return c;
     });
 
-    const updatedObj = localComplaints.find(c => c.complaintId === id || c._id === id);
-    return { success: true, data: updatedObj };
+    const updatedObj = localComplaints.find(
+      (c) => c.complaintId?.toLowerCase() === queryId || c._id?.toLowerCase() === queryId
+    );
+    return { success: Boolean(updatedObj), data: updatedObj, offline: true };
+  },
+
+  async addNote(id, payload) {
+    return this.updateComplaint(id, payload);
   },
 
   async upvoteComplaint(id) {
     try {
-      const res = await api.upvoteComplaint(id);
+      const res = await api.upvoteComplaint(encodeURIComponent(id));
       if (res && res.success) {
         return res;
       }
     } catch (err) {
-      console.warn(`Backend error upvoting ${id}, updating local support count:`, err);
+      console.warn(`Backend error upvoting ${id}:`, err);
     }
 
     let updatedCount = 0;
-    localComplaints = localComplaints.map(c => {
-      if (c.complaintId === id || c._id === id) {
+    const queryId = id?.toLowerCase();
+    localComplaints = localComplaints.map((c) => {
+      if (c.complaintId?.toLowerCase() === queryId || c._id?.toLowerCase() === queryId) {
         updatedCount = (c.supportCount || 0) + 1;
         return { ...c, supportCount: updatedCount };
       }
       return c;
     });
 
-    return { success: true, data: { complaintId: id, supportCount: updatedCount } };
-  },
-
-  // AI Triage calculation simulation
-  calculateAITriage(category, description = '') {
-    switch (category) {
-      case 'Water Leakage':
-        return {
-          category: 'Water Main Burst',
-          severity: 'CRITICAL',
-          confidence: '96%',
-          recommendedDepartment: 'Water & Utilities',
-          estimatedSLA: '12-24 hours',
-          reason: 'Potential main pipe pressure loss and clean water wastage.'
-        };
-      case 'Damaged Road':
-        return {
-          category: 'Power Grid Hazard',
-          severity: 'CRITICAL',
-          confidence: '94%',
-          recommendedDepartment: 'Electrical Services',
-          estimatedSLA: '6-12 hours',
-          reason: 'Exposed wiring and live electrical hazard risk.'
-        };
-      case 'Pothole':
-        return {
-          category: 'Road & Pavement Hazard',
-          severity: 'HIGH',
-          confidence: '92%',
-          recommendedDepartment: 'Roads & Infrastructure',
-          estimatedSLA: '24-48 hours',
-          reason: 'Traffic obstruction and vehicle damage hazard.'
-        };
-      case 'Garbage Accumulation':
-        return {
-          category: 'Sanitation Overflow',
-          severity: 'MEDIUM',
-          confidence: '90%',
-          recommendedDepartment: 'Sanitation & Waste Management',
-          estimatedSLA: '48-72 hours',
-          reason: 'Public health and odor overflow concern.'
-        };
-      default:
-        return {
-          category: 'General Utility Fault',
-          severity: 'LOW',
-          confidence: '88%',
-          recommendedDepartment: 'Public Works',
-          estimatedSLA: '72 hours',
-          reason: 'Standard municipal inspection and review.'
-        };
-    }
+    return { success: true, data: { complaintId: id, supportCount: updatedCount }, offline: true };
   }
 };

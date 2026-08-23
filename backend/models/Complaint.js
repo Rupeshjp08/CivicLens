@@ -52,11 +52,51 @@ const complaintSchema = new mongoose.Schema(
     },
     supportCount: {
       type: Number,
-      default: 0
+      default: 1
     },
-    createdAt: {
+    assignedOfficerId: {
+      type: String,
+      default: null
+    },
+    assignedOfficerName: {
+      type: String,
+      default: null
+    },
+    resolutionImage: {
+      type: String,
+      default: ''
+    },
+    resolutionNote: {
+      type: String,
+      default: ''
+    },
+    mapX: {
+      type: Number,
+      default: 50
+    },
+    mapY: {
+      type: Number,
+      default: 50
+    },
+    fieldNotes: [
+      {
+        timestamp: { type: String, default: () => new Date().toISOString() },
+        author: { type: String, default: 'Officer' },
+        note: { type: String, required: true }
+      }
+    ],
+    statusHistory: [
+      {
+        previousStatus: String,
+        newStatus: String,
+        changedBy: String,
+        note: String,
+        timestamp: { type: Date, default: Date.now }
+      }
+    ],
+    resolvedAt: {
       type: Date,
-      default: Date.now
+      default: null
     }
   },
   {
@@ -65,3 +105,4 @@ const complaintSchema = new mongoose.Schema(
 );
 
 module.exports = mongoose.model('Complaint', complaintSchema);
+

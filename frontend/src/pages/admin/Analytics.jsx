@@ -5,19 +5,17 @@ import {
   CheckCircle2, 
   AlertTriangle, 
   ThumbsUp, 
-  PieChart, 
-  Layers, 
-  Clock,
-  ShieldCheck
+  Clock
 } from 'lucide-react';
-import { api } from '../../services/api';
+import { complaintService } from '../../services/complaintService';
+import KpiCard from '../../components/KpiCard';
 
 export default function Analytics() {
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.getComplaints().then(res => {
+    complaintService.getComplaints().then(res => {
       setLoading(false);
       if (res.success && res.data) {
         setComplaints(res.data);
@@ -27,7 +25,7 @@ export default function Analytics() {
 
   const totalVolume = complaints.length;
   const resolvedCount = complaints.filter(i => i.status === 'Resolved').length;
-  const resolutionRate = totalVolume ? ((resolvedCount / totalVolume) * 100).toFixed(1) : '88.4';
+  const resolutionRate = totalVolume ? ((resolvedCount / totalVolume) * 100).toFixed(1) + '%' : '88.4%';
   const slaBreaches = complaints.filter(i => (i.priority === 'Critical' || i.priority === 'High') && i.status !== 'Resolved').length;
   const totalUpvotes = complaints.reduce((sum, item) => sum + (item.supportCount || 0), 0);
 
@@ -45,96 +43,83 @@ export default function Analytics() {
 
   // Area Workload Meters
   const sectorWorkload = [
-    { sector: 'Sector 1 (North District)', count: 24, percent: '80%' },
-    { sector: 'Sector 2 (Commercial Hub)', count: 18, percent: '60%' },
-    { sector: 'Sector 3 (Downtown Metro)', count: 28, percent: '92%' },
-    { sector: 'Sector 4 (Civic South)', count: 12, percent: '40%' },
-    { sector: 'Sector 5 (East Utility Belt)', count: 32, percent: '98%' }
+    { sector: 'Sector 1 (North District)', count: 24, percent: 80 },
+    { sector: 'Sector 2 (Commercial Hub)', count: 18, percent: 60 },
+    { sector: 'Sector 3 (Downtown Metro)', count: 28, percent: 92 },
+    { sector: 'Sector 4 (Civic South)', count: 12, percent: 40 },
+    { sector: 'Sector 5 (East Utility Belt)', count: 32, percent: 98 }
   ];
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.25rem' }}>
-            <BarChart3 color="#3B82F6" size={24} />
-            <h1 style={{ fontSize: '1.85rem', fontWeight: 800 }}>Civic Analytics & Intelligence Engine</h1>
-          </div>
-          <p style={{ color: 'var(--text-secondary)' }}>
-            Real-time department performance, SLA compliance metrics, category distributions, and area workload density.
-          </p>
+      <div>
+        <div style={{ fontSize: '0.8rem', color: 'var(--brand-blue)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.35rem' }}>
+          OFFICER ANALYTICS ENGINE
         </div>
+        <h1 style={{ fontSize: '2.1rem', fontWeight: 800 }}>Municipal Operations Analytics</h1>
+        <p style={{ color: 'var(--text-secondary)' }}>
+          Real-time metrics on triage velocity, category volume distribution, community support, and SLA compliance.
+        </p>
       </div>
 
-      {/* Operational KPI Cards */}
+      {/* KPI Overview Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem' }}>
-        <div className="panel" style={{ padding: '1.5rem', borderLeft: '4px solid #38BDF8' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Total Report Volume</span>
-            <Layers color="#38BDF8" size={20} />
-          </div>
-          <h2 className="font-mono" style={{ fontSize: '2.2rem', fontWeight: 800, marginTop: '0.4rem', color: 'var(--text-primary)' }}>
-            {loading ? '...' : totalVolume}
-          </h2>
-          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Ingested citizen issues</span>
-        </div>
-
-        <div className="panel" style={{ padding: '1.5rem', borderLeft: '4px solid #10B981' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Resolution Rate %</span>
-            <CheckCircle2 color="#10B981" size={20} />
-          </div>
-          <h2 className="font-mono" style={{ fontSize: '2.2rem', fontWeight: 800, marginTop: '0.4rem', color: 'var(--text-primary)' }}>
-            {loading ? '...' : `${resolutionRate}%`}
-          </h2>
-          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>SLA target on-time completions</span>
-        </div>
-
-        <div className="panel" style={{ padding: '1.5rem', borderLeft: '4px solid #EF4444' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Active SLA Breaches</span>
-            <AlertTriangle color="#EF4444" size={20} />
-          </div>
-          <h2 className="font-mono" style={{ fontSize: '2.2rem', fontWeight: 800, marginTop: '0.4rem', color: '#EF4444' }}>
-            {loading ? '...' : slaBreaches}
-          </h2>
-          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>High priority overdue tickets</span>
-        </div>
-
-        <div className="panel" style={{ padding: '1.5rem', borderLeft: '4px solid #3B82F6' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Community Upvotes</span>
-            <ThumbsUp color="#3B82F6" size={20} />
-          </div>
-          <h2 className="font-mono" style={{ fontSize: '2.2rem', fontWeight: 800, marginTop: '0.4rem', color: 'var(--text-primary)' }}>
-            {loading ? '...' : totalUpvotes}
-          </h2>
-          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Total citizen support votes</span>
-        </div>
+        <KpiCard
+          value={totalVolume}
+          label="Total Incident Ingress"
+          subtitle="Registered in database"
+          icon={TrendingUp}
+          accentColor="#3B82F6"
+          loading={loading}
+        />
+        <KpiCard
+          value={resolutionRate}
+          label="Resolution SLA Rate"
+          subtitle="Verified complete"
+          icon={CheckCircle2}
+          accentColor="#10B981"
+          trend={{ direction: 'up', value: '3.1% this week' }}
+          loading={loading}
+        />
+        <KpiCard
+          value={slaBreaches}
+          label="High Hazard Queue"
+          subtitle="Critical pending triage"
+          icon={AlertTriangle}
+          accentColor="#EF4444"
+          loading={loading}
+        />
+        <KpiCard
+          value={totalUpvotes}
+          label="Community Support Upvotes"
+          subtitle="Citizen engagement volume"
+          icon={ThumbsUp}
+          accentColor="#F59E0B"
+          loading={loading}
+        />
       </div>
 
-      {/* Visual Distributions & Workload Meters */}
+      {/* Category Breakdown & Sector Workload */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.5rem' }}>
-        
-        {/* Category Breakdown Bars */}
+        {/* Incident Distribution by Category */}
         <div className="panel" style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <PieChart size={18} color="#3B82F6" />
-            <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>Category Distribution Breakdown</h3>
+            <BarChart3 size={20} color="#3B82F6" />
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 700 }}>Category Volume Breakdown</h3>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {Object.entries(categoryCounts).map(([catName, count]) => {
-              const percentage = Math.min(Math.round((count / maxCatCount) * 100), 100);
+            {Object.entries(categoryCounts).map(([cat, count]) => {
+              const pct = Math.round((count / maxCatCount) * 100);
               return (
-                <div key={catName}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '0.35rem' }}>
-                    <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{catName}</span>
-                    <span className="font-mono" style={{ color: '#38BDF8', fontWeight: 700 }}>{count} Incidents</span>
+                <div key={cat} style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.84rem' }}>
+                    <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{cat}</span>
+                    <span className="font-mono" style={{ color: 'var(--text-muted)' }}>{count} tickets</span>
                   </div>
-                  <div style={{ height: '8px', background: '#182030', borderRadius: '4px', overflow: 'hidden' }}>
-                    <div style={{ width: `${percentage}%`, height: '100%', background: 'linear-gradient(90deg, #3B82F6 0%, #38BDF8 100%)', borderRadius: '4px' }} />
+                  <div className="progress-bar">
+                    <div className="progress-fill" style={{ width: `${pct}%`, background: 'var(--brand-blue)' }} />
                   </div>
                 </div>
               );
@@ -142,22 +127,28 @@ export default function Analytics() {
           </div>
         </div>
 
-        {/* Sector Workload Meters */}
+        {/* Sector Workload Capacity */}
         <div className="panel" style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <TrendingUp size={18} color="#F59E0B" />
-            <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>Area Workload Distribution Meters</h3>
+            <Clock size={20} color="#F59E0B" />
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 700 }}>Sector Workload Density</h3>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {sectorWorkload.map((sec, idx) => (
-              <div key={idx} style={{ background: '#182030', border: '1px solid var(--border-color)', padding: '0.85rem 1rem', borderRadius: 'var(--radius-sm)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '0.35rem' }}>
-                  <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{sec.sector}</span>
-                  <span className="font-mono" style={{ color: '#F59E0B', fontWeight: 700 }}>{sec.count} Open Reports</span>
+              <div key={idx} style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.84rem' }}>
+                  <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{sec.sector}</span>
+                  <span className="font-mono" style={{ color: sec.percent > 90 ? '#EF4444' : 'var(--text-muted)' }}>{sec.count} active</span>
                 </div>
-                <div style={{ height: '6px', background: '#0d121c', borderRadius: '3px', overflow: 'hidden' }}>
-                  <div style={{ width: sec.percent, height: '100%', background: '#F59E0B', borderRadius: '3px' }} />
+                <div className="progress-bar">
+                  <div 
+                    className="progress-fill" 
+                    style={{ 
+                      width: `${sec.percent}%`, 
+                      background: sec.percent > 90 ? '#EF4444' : sec.percent > 70 ? '#F59E0B' : '#10B981' 
+                    }} 
+                  />
                 </div>
               </div>
             ))}

@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { Search, MapPin, Calendar, AlertCircle, CheckCircle, Clock, Shield, User, FileText } from 'lucide-react';
-import { api } from '../services/api';
+import { useSearchParams, useParams } from 'react-router-dom';
+import { Search, MapPin, Calendar, CheckCircle, User, FileText } from 'lucide-react';
+import { complaintService } from '../services/complaintService';
+import StatusBadge from '../components/StatusBadge';
+import PriorityScore from '../components/PriorityScore';
+import EmptyState from '../components/EmptyState';
 
-export default function TrackComplaint() {
+export default function TrackComplaint({ lookupId = '' }) {
   const [searchParams] = useSearchParams();
-  const initialId = searchParams.get('id') || '';
+  const { id: routeId } = useParams();
+  const initialId = lookupId || searchParams.get('id') || routeId || '';
 
   const [searchId, setSearchId] = useState(initialId);
   const [complaint, setComplaint] = useState(null);
@@ -18,7 +22,7 @@ export default function TrackComplaint() {
     setError(null);
     setComplaint(null);
 
-    const res = await api.getComplaintById(idToSearch.trim());
+    const res = await complaintService.getComplaintById(idToSearch.trim());
     setLoading(false);
 
     if (res.success && res.data) {
@@ -39,17 +43,6 @@ export default function TrackComplaint() {
     fetchStatus(searchId);
   };
 
-  const getStatusBadge = (status) => {
-    switch (status) {
-      case 'Pending': return 'badge-pending';
-      case 'In Review': return 'badge-review';
-      case 'In Progress': return 'badge-progress';
-      case 'Resolved': return 'badge-resolved';
-      case 'Rejected': return 'badge-rejected';
-      default: return 'badge-pending';
-    }
-  };
-
   const statusSteps = [
     { key: 'Pending', label: 'Reported' },
     { key: 'In Review', label: 'Triage & Assigned' },
@@ -68,19 +61,15 @@ export default function TrackComplaint() {
     return 'upcoming';
   };
 
-  // Mock timestamped official field notes
-  const mockFieldNotes = [
-    {
-      timestamp: '2026-08-22 10:14 AM',
-      author: 'Eng. Marcus Vance (Public Works)',
-      note: 'Initial triage complete. Work order #WO-492 dispatched to Field Crew 3.'
-    },
-    {
-      timestamp: '2026-08-22 11:30 AM',
-      author: 'Dispatch Operations',
-      note: 'Site inspection verified. Heavy equipment en route to landmark location.'
-    }
-  ];
+  const mockFieldNotes = (complaint?.fieldNotes && complaint.fieldNotes.length > 0)
+    ? complaint.fieldNotes
+    : [
+        {
+          timestamp: new Date(complaint?.createdAt || Date.now()).toLocaleDateString(),
+          author: 'CivicLens intake',
+          note: 'Complaint received and queued for municipal review.'
+        }
+      ];
 
   return (
     <div style={{ maxWidth: '840px', margin: '0 auto' }}>
@@ -90,20 +79,22 @@ export default function TrackComplaint() {
         </div>
         <h1 style={{ fontSize: '2.1rem', fontWeight: 800 }}>Track Complaint Status</h1>
         <p style={{ color: 'var(--text-secondary)' }}>
-          Enter your Reference ID (e.g. CIV-1001) to view stage progression and official engineering field notes.
+          Enter your Reference ID (e.g. CIV-2026-00101 or CIV-1001) to view stage progression, smart priority score, and engineering field notes.
         </p>
       </div>
 
-      {/* Search Input Panel */}
+      {/* Search Input Form */}
       <form onSubmit={handleSearch} className="panel" style={{ marginBottom: '2rem', padding: '1.25rem' }}>
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
+        <div className="track-search-row">
+          <label htmlFor="complaint-id-search" className="sr-only">Complaint ID</label>
           <input
+            id="complaint-id-search"
             type="text"
             className="form-control font-mono"
-            placeholder="Enter Complaint ID (e.g., CIV-1001)"
+            placeholder="Enter Complaint ID (e.g., CIV-3913)"
             value={searchId}
             onChange={(e) => setSearchId(e.target.value)}
-            style={{ flex: 1 }}
+            autoComplete="off"
           />
           <button type="submit" className="btn btn-primary" disabled={loading}>
             <Search size={16} />
@@ -112,22 +103,9 @@ export default function TrackComplaint() {
         </div>
       </form>
 
-      {/* Error Banner */}
-      {error && (
-        <div className="panel" style={{ 
-          background: 'var(--status-critical-bg)', 
-          borderColor: 'rgba(239, 68, 68, 0.4)',
-          color: '#EF4444',
-          padding: '1rem',
-          marginBottom: '1.5rem',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.75rem'
-        }}>
-          <AlertCircle size={20} />
-          <span>{error}</span>
-        </div>
-      )}
+      {/* Loading / Error States */}
+      {loading && <EmptyState type="loading" title="Searching database..." message="Retrieving complaint ticket details." />}
+      {error && <EmptyState type="error" title="Ticket Not Found" message={error} />}
 
       {/* Complaint Detail Overview */}
       {complaint && (
@@ -137,8 +115,8 @@ export default function TrackComplaint() {
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem' }}>
                   <span className="badge badge-medium font-mono">#{complaint.complaintId}</span>
-                  <span className={`badge ${getStatusBadge(complaint.status)}`}>{complaint.status}</span>
-                  <span className={`badge badge-${complaint.priority?.toLowerCase() || 'medium'}`}>{complaint.priority} Priority</span>
+                  <StatusBadge type="status" value={complaint.status} />
+                  <StatusBadge type="priority" value={complaint.priority} />
                 </div>
                 <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)' }}>{complaint.title}</h2>
               </div>
@@ -149,9 +127,17 @@ export default function TrackComplaint() {
               </div>
             </div>
 
+            {/* Smart Priority Engine Display */}
+            <div style={{ background: 'var(--bg-canvas)', padding: '1.25rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)' }}>
+              <div style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem' }}>
+                Smart Priority Engine Score
+              </div>
+              <PriorityScore complaint={complaint} size="md" showBreakdown={true} />
+            </div>
+
             {/* 4-Stage Operational Stepper */}
             {complaint.status !== 'Rejected' && (
-              <div style={{ background: '#0d121c', padding: '1.75rem 1.5rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)' }}>
+              <div style={{ background: 'var(--bg-canvas)', padding: '1.75rem 1.5rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative' }}>
                   {statusSteps.map((step, idx) => {
                     const state = getStepState(step.key, complaint.status);
@@ -170,7 +156,7 @@ export default function TrackComplaint() {
                           justifyContent: 'center',
                           fontWeight: 700,
                           fontSize: '0.85rem',
-                          background: isCompleted || isCurrent ? 'var(--brand-blue)' : '#182030',
+                          background: isCompleted || isCurrent ? 'var(--brand-blue)' : 'var(--bg-elevated)',
                           border: isCompleted || isCurrent ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid var(--border-color)',
                           color: isCompleted || isCurrent ? '#ffffff' : 'var(--text-muted)'
                         }}>
@@ -191,22 +177,45 @@ export default function TrackComplaint() {
             )}
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
-              <div style={{ background: '#0d121c', padding: '1rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)' }}>
+              <div style={{ background: 'var(--bg-canvas)', padding: '1rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)' }}>
                 <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Category</div>
                 <div style={{ fontWeight: 700, color: 'var(--text-primary)', marginTop: '0.2rem' }}>{complaint.category}</div>
               </div>
-              <div style={{ background: '#0d121c', padding: '1rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)' }}>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Location & GPS</div>
+              <div style={{ background: 'var(--bg-canvas)', padding: '1rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)' }}>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Location & Landmark</div>
                 <div className="font-mono" style={{ fontWeight: 600, color: '#38BDF8', marginTop: '0.2rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
                   <MapPin size={14} color="#3B82F6" /> {complaint.location}
                 </div>
               </div>
             </div>
 
-            <div style={{ background: '#0d121c', padding: '1.25rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)' }}>
+            <div style={{ background: 'var(--bg-canvas)', padding: '1.25rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)' }}>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.4rem' }}>Detailed Report Description</div>
               <p style={{ color: 'var(--text-primary)', fontSize: '0.92rem', lineHeight: 1.6 }}>{complaint.description}</p>
+              {complaint.image && (
+                <div style={{ marginTop: '1rem' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', marginBottom: '0.4rem' }}>Citizen Photo Evidence</div>
+                  <div style={{ borderRadius: 'var(--radius-sm)', overflow: 'hidden', border: '1px solid var(--border-color)', maxHeight: '240px', maxWidth: '400px' }}>
+                    <img src={complaint.image} alt="Report Evidence" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                </div>
+              )}
             </div>
+
+            {complaint.resolutionImage && (
+              <div style={{ background: 'rgba(16, 185, 129, 0.08)', padding: '1.25rem', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(16, 185, 129, 0.25)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                  <CheckCircle size={18} color="#10B981" />
+                  <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#10B981', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Field Resolution Evidence (After Repair)</span>
+                </div>
+                <div style={{ borderRadius: 'var(--radius-sm)', overflow: 'hidden', border: '1px solid var(--border-color)', maxHeight: '240px', maxWidth: '400px', marginBottom: '0.5rem' }}>
+                  <img src={complaint.resolutionImage} alt="Resolution Evidence" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </div>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                  Verified resolution proof uploaded by field officer upon completing work order.
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Official Field Notes Timeline */}
@@ -218,7 +227,7 @@ export default function TrackComplaint() {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {mockFieldNotes.map((item, idx) => (
-                <div key={idx} style={{ background: '#182030', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', padding: '1rem' }}>
+                <div key={idx} style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', padding: '1rem' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem', fontSize: '0.8rem' }}>
                     <span style={{ fontWeight: 700, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                       <User size={13} color="#38BDF8" /> {item.author}
