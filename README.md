@@ -17,7 +17,7 @@
 
 ---
 
-## 📁 Repository Structure
+## 📁 Repository Structure for CivicLens
 
 ```text
 civic-lens/
